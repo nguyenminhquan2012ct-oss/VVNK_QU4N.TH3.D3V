@@ -1,161 +1,171 @@
 # VVNK - QU4N.TH3.D3V
 
-Discord Self-Bot cho personal use.
+**Self-bot Discord cho personal use - 1 click la chay!**
 
 ---
 
-## Cài đặt
+## Gioi thieu
 
-### 1. Tải source code
-- Vào https://github.com/nguyenminhquan2012ct-oss/VVNK_QU4N.TH3.D3V
-- Nhấn nút **Code** -> **Download ZIP**
-- Giải nén vào thư mục bất kỳ
+VVNK la self-bot Discord duoc viet boi QU4N.TH3.D3V, ho tro rat nhau tinh nang tu spam, raid, troll, quan ly server, den cac tien ich hang ngay. Bot chay tren tai khoan nguoi dung (self-bot), giao dien don gian, de su dung.
 
-### 2. Cài Python
-Tải Python tại https://python.org (chọn bản 3.9+)
-- **Windows**: Chọn "Add Python to PATH" khi cài
-- **Mac/Linux**: Terminal chạy `python3 --version` để kiểm tra
+---
 
-### 3. Chạy bot
+## Cai dat
+
+### Buoc 1: Tai source code
+- Vao: https://github.com/nguyenminhquan2012ct-oss/VVNK_QU4N.TH3.D3V
+- Nhan **Code** -> **Download ZIP**
+- Giai nen vao thu muc bat ky
+
+### Buoc 2: Cai Python 3.9+
+Tai Python tai: https://python.org
 
 **Windows:**
-- double-click `Run.bat`
-- Hoặc mở terminal: `python index.py`
+- Chon "Add Python to PATH" khi cai
+- Sau do double-click `Run.bat` la xong!
 
-**Mac/Linux:**
+**Mac / Linux:**
 ```bash
-python3 index.py
+python3 --version   # kiem tra
+python3 index.py    # chay bot
 ```
 
-### 4. Nhập Token
-- Lần đầu chạy, bot sẽ mở file `config\config.json`
-- Nhập token Discord vào `"token": "DAN_TOKEN_VAO_DAY"`
-- Lưu file -> chạy lại bot
+### Buoc 3: Nhap Token
+- Lan dau chay, bot se tu dong mo notepad de nhap token
+- Paste token vao giua 2 dau ngoac: `"token": "DAY_LA_TOKEN_CUA_BAN"`
+- Save file -> bot se tu dong tiep tuc
+
+**Lay token o dau?**
+- Vao https://discord.com/developers/applications
+- Tao Application moi -> di vao **Bot** -> **Copy Token**
 
 ---
 
-## Cấu trúc thư mục
+## Cau truc thu muc
 
 ```
 VVNK/
-├── bot.py           ← File chính
-├── index.py         ← Cài đặt + chạy
-├── Run.bat          ← Chạy nhanh (Windows)
+├── bot.py              ← File chinh (1952 dong code!)
+├── Run.bat             ← 1 click chay (Windows)
+├── install.bat         ← 1 click cai thu vien
+├── install.py          ← Script cai tu dong
 ├── config/
-│   └── config.json  ← Token + prefix
+│   └── config.json     ← Token + prefix + webhook
 ├── cogs/
-│   ├── cycstatus.txt  ← Status tự động chuyển
-│   └── nhay.txt       ← Nội dung lệnh .nhay
-├── music/           ← File nhạc (.mp3, .wav, .ogg)
-├── ffmpeg/          ← Đặt ffmpeg.exe vào đây (Windows)
-├── ngon.txt         ← Nội dung lệnh .thuong
-├── datoken.txt      ← Token phụ (cho lệnh tokenspam)
-└── requirements.txt
+│   ├── cycstatus.txt   ← Status tu dong chuyen
+│   └── nhay.txt        ← Noi dung spam .nhay
+├── music/              ← File nhac (.mp3, .wav, .ogg)
+├── ffmpeg/             ← Dat ffmpeg.exe vao day (Windows)
+├── datoken.txt         ← Token phu (cho lenh tokenspam)
+└── requirements.txt    ← Danh sach thu vien
 ```
 
 ---
 
-## Danh sách lệnh
+## Danh sach lenh
 
-### Lệnh chính
-| Lệnh | Mô tả |
+### Lenh chinh
+| Lenh | Mo ta |
 |------|-------|
-| `.menu` | Mở bảng điều khiển |
-| `.botinfo` | Thông tin bot |
-| `.restart` | Khởi động lại bot |
-| `.shutdown` | Tắt bot |
+| `.menu` | Mo bang dieu khien |
+| `.botinfo` | Thong tin bot |
+| `.restart` | Khoi dong lai bot |
+| `.shutdown` | Tat bot |
 
-### Quản lý server
-| Lệnh | Mô tả |
+### Quan ly server
+| Lenh | Mo ta |
 |------|-------|
-| `.kick @user` | Kick thành viên |
-| `.ban @user` | Ban thành viên |
+| `.kick @user` | Kick thanh vien |
+| `.ban @user` | Ban thanh vien |
 | `.unban ID` | Unban |
 
 ### Spam / Raid
-| Lệnh | Mô tả |
+| Lenh | Mo ta |
 |------|-------|
-| `.spam [delay] [nội dung]` | Spam tin nhắn |
-| `.nhay [delay]` | Spam từ nhay.txt |
-| `.webhook [url] [nội dung]` | Spam qua webhook |
-| `.nuke [tên] [nội dung]` | Phá server |
-| `.bomb` | Xóa toàn bộ kênh |
-| `.massreact [số] [emoji]` | Thêm reaction hàng loạt |
-| `.tokenspam [delay] [nội dung]` | Spam đa token |
-| `.tokenvc [ID voice]` | Treo voice đa token |
+| `.spam [delay] [noi dung]` | Spam tin nhan |
+| `.nhay [delay]` | Spam tu nhay.txt |
+| `.webhook [url] [noi dung]` | Spam qua webhook |
+| `.nuke [ten] [noi dung]` | Pha server |
+| `.bomb` | Xoa toan bo kenh |
+| `.massreact [so] [emoji]` | Them reaction hang loat |
+| `.tokenspam [delay] [noi dung]` | Spam da token |
+| `.tokenvc [ID voice]` | Treo voice da token |
 | `.vcspam [ID voice]` | Spam join/leave voice |
-| `.stop` / `.stopspam` / `.stopnhay` / `.stopwebhook` / `.stopvcspam` / `.stoptokenspam` | Dừng các lệnh đang chạy |
+| `.stop` / `.stopspam` / `.stopnhay` / `.stopwebhook` / `.stopvcspam` / `.stoptokenspam` | Dung cac lenh dang chay |
 
-### Tiện ích
-| Lệnh | Mô tả |
+### Tien ich
+| Lenh | Mo ta |
 |------|-------|
-| `.tienich` | Danh sách tiện ích |
-| `.clear [số]` | Xóa tin nhắn |
-| `.hackclear` | Xóa chat bằng tin nhắn trống |
+| `.tienich` | Danh sach tien ich |
+| `.clear [so]` | Xoa tin nhan |
+| `.hackclear` | Xoa chat bang tin nhan trong |
 | `.avatar [@user]` | Xem avatar |
 | `.banner [@user]` | Xem banner |
-| `.serverinfo` | Thông tin server |
-| `.iplookup [IP]` | Tra cứu IP |
-| `.insta [tên]` | Xem Instagram |
-| `.math [phep tính]` | Máy tính |
-| `.cloneemoji [emoji]` | Sao chép emoji |
-| `.clone_channels [ID cũ] [ID mới]` | Sao chép kênh |
-| `.clone_roles [ID cũ] [ID mới]` | Sao chép role |
-| `.deleteallroles` | Xóa tất cả role |
-| `.closealldms` | Đóng tất cả DM |
-| `.delfriends` | Xóa tất cả bạn bè |
-| `.tokencheck [token]` | Kiểm tra token |
-| `.checkpromo [link]` | Kiểm tra Nitro promo |
-| `.cyclestatus` | Tự động chuyển status |
-| `.addstatus [text]` | Thêm status |
-| `.clearstatus` | Xóa tất cả status |
-| `.setstatus [text]` | Đặt status |
+| `.serverinfo` | Thong tin server |
+| `.iplookup [IP]` | Tra cuu IP |
+| `.insta [ten]` | Xem Instagram |
+| `.math [phep tinh]` | May tinh |
+| `.cloneemoji [emoji]` | Sao chep emoji |
+| `.clone_channels [ID cu] [ID moi]` | Sao chep kenh |
+| `.clone_roles [ID cu] [ID moi]` | Sao chep role |
+| `.deleteallroles` | Xoa tat ca role |
+| `.closealldms` | Dong tat ca DM |
+| `.delfriends` | Xoa tat ca ban be |
+| `.tokencheck [token]` | Kiem tra token |
+| `.checkpromo [link]` | Kiem tra Nitro promo |
+| `.cyclestatus` | Tu dong chuyen status |
+| `.addstatus [text]` | Them status |
+| `.clearstatus` | Xoa tat ca status |
+| `.setstatus [text]` | Dat status |
 
 ### Voice
-| Lệnh | Mô tả |
+| Lenh | Mo ta |
 |------|-------|
 | `.vcjoin [ID] [Y/N] [Y/N] [Y/N]` | Join voice (mute/deafen/camera) |
-| `.vcleave` | Rời voice |
-| `.xanhac [ID] [tên file]` | Phát nhạc trong voice |
-| `.forcedisconnect [@user]` | Ngắt người dùng khỏi voice |
-| `.stopforcedisconnect` | Dừng forcedisconnect |
+| `.vcleave` | Roi voice |
+| `.xanhac [ID] [ten file]` | Phat nhac trong voice |
+| `.forcedisconnect [@user]` | Ngat nguoi dung khoi voice |
+| `.stopforcedisconnect` | Dung forcedisconnect |
 
-### Troll / Giải trí
-| Lệnh | Mô tả |
+### Troll / Giai tri
+| Lenh | Mo ta |
 |------|-------|
-| `.troll` | Danh sách lệnh troll |
-| `.nsfw [loại]` | NSFW (anal/hanal/4k/gif/pussy/boobs/ass/hboobs/thighs) |
-| `.succac` | Hiệu ứng |
-| `.rainbowrole [@role]` | Role 7 màu |
-| `.rizz [@user]` | Random câu tán tỉnh |
-| `.roast [@user] | Random câu roast |
-| `.cat` | Ảnh mèo ngẫu nhiên |
-| `.phc [@user] [nội dung]` | PornHub comment |
-| `.rpc playing [tên]` | Đang chơi game |
-| `.rpc streaming [tên]` | Đang stream |
-| `.rpc listening [tên]` | Đang nghe |
-| `.rpc watching [tên]` | Đang xem |
-| `.stoprpc` | Dừng RPC |
-| `.autoreact on/off` | Bật/tắt tự reaction |
-| `.afk [lý do]` | AFK |
-| `.unafk` | Bỏ AFK |
+| `.troll` | Danh sach lenh troll |
+| `.nsfw [loai]` | NSFW (anal/hanal/4k/gif/pussy/boobs/ass/hboobs/thighs) |
+| `.succac` | Hieu ung |
+| `.rainbowrole [@role]` | Role 7 mau |
+| `.rizz [@user]` | Random cau tan tinh |
+| `.roast [@user]` | Random cau roast |
+| `.cat` | Anh meo ngau nhien |
+| `.phc [@user] [noi dung]` | PornHub comment |
+| `.rpc playing [ten]` | Dang choi game |
+| `.rpc streaming [ten]` | Dang stream |
+| `.rpc listening [ten]` | Dang nghe |
+| `.rpc watching [ten]` | Dang xem |
+| `.stoprpc` | Dung RPC |
+| `.autoreact on/off` | Bat/tat tu reaction |
+| `.afk [ly do]` | AFK |
+| `.unafk` | Bo AFK |
 
 ---
 
-## Miễn trừ trách nhiệm
+## Ho tro nen tang
 
-- Bot này là **self-bot** (chạy trên tài khoản người dùng), vi phạm Discord Terms of Service
-- Sử dụng trên **tài khoản phụ (alt)** để tránh bị ban
-- Tác giả không chịu trách nhiệm về任何hậu quả khi sử dụng
-- Chỉ dùng cho mục đích học tập, thử nghiệm
+| Nen tang | Trang thai |
+|----------|------------|
+| Windows | Ho tro |
+| Mac | Ho tro (dung `python3`) |
+| Linux | Ho tro (dung `python3`) |
 
 ---
 
-## Hỗ trợ
+## Luu y quan trong
 
-- **Windows** ✅
-- **Mac** ✅ (dùng `python3` thay `python`)
-- **Linux** ✅ (dùng `python3` thay `python`)
+- Day la **self-bot** - chay tren tai khoan nguoi dung, vi Discord Terms of Service
+- **Nhat thiet** dung tai khoan phu (alt) de tranh bi ban
+- Chi dung cho muc dich hoc tap, thu nghiem
+- Tac gia **khong chiu trach nhiem** ve bat ky hau qua nao khi su dung
+- **KHONG** dung vao muc dich gay hai nguoi khac
 
 ---
 
