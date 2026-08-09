@@ -8,10 +8,10 @@ Discord Self-Bot với nhiều tính năng: spam, raid, nhạc, giải trí, qu�
 
 ## Cách tải
 
-### Cách 1: Tải file ZIP
+### Cách 1: Tải file ZIP (RECOMMEND)
 1. Vào: https://github.com/nguyenminhquan2012ct-oss/VVNK_QU4N.TH3.D3V
 2. Nút **Code** (màu xanh) → **Download ZIP**
-3. Giải nén thư mục `VVNK-main`
+3. Giải nén thư mục `VVNK_QU4N.TH3.D3V`
 
 ### Cách 2: Clone (cần Git)
 ```bash
