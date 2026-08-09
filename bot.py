@@ -1931,30 +1931,27 @@ async def stopvcspam(ctx):
 
 @bot.event
 async def on_ready():
+    os.system('cls' if os.name == 'nt' else 'clear')
     guild_count = len(bot.guilds)
     python_ver = platform.python_version()
     discord_ver = discord.__version__
-    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    print(f"\033[1;36m    ╔═══════════════════════════════════════════════╗\033[0m")
-    print(f"\033[1;36m    ║                                               ║\033[0m")
-    print(f"\033[1;36m    ██╗   ██╗██╗   ██╗███╗   ██╗██╗  ██╗   \033[0m")
-    print(f"\033[1;36m    ██║   ██║██║   ██║████╗  ██║██║ ██╔╝   \033[0m")
-    print(f"\033[1;36m    ██║   ██║██║   ██║██╔██╗ ██║█████╔╝    \033[0m")
-    print(f"\033[1;36m    ╚██╗ ██╔╝╚██╗ ██╔╝██║╚██╗██║██╔═██╗    \033[0m")
-    print(f"\033[1;36m     ╚████╔╝  ╚████╔╝ ██║ ╚████║██║  ██╗   \033[0m")
-    print(f"\033[1;36m      ╚═══╝    ╚═══╝  ╚═╝  ╚═══╝╚═╝  ╚═╝   \033[0m")
-    print(f"\033[1;36m    ║                                               ║\033[0m")
-    print(f"\033[1;36m    ╚═══════════════════════════════════════════════╝\033[0m")
-    print(f"\033[1;33m              QU4N.TH3.D3V - Author\033[0m")
-    print(f"\033[1;36m{'='*50}\033[0m")
-    print(f"\033[1;32m   Bot Name: \033[0m{bot.user.name}#{bot.user.discriminator}")
-    print(f"\033[1;32m   Bot ID:   \033[0m{bot.user.id}")
-    print(f"\033[1;32m   Prefix:   \033[0m{prefix}")
-    print(f"\033[1;32m   Version:  \033[0m{version}")
-    print(f"\033[1;32m   Python:   \033[0m{python_ver}")
-    print(f"\033[1;32m   Discord:  \033[0m{discord_ver}")
-    print(f"\033[1;32m   Servers:  \033[0m{guild_count}")
-    print(f"\033[1;32m   Started:  \033[0m{current_time}")
-    print(f"\033[1;36m{'='*50}\033[0m")
+    banner = f"""\033[1;33m
+                  QU4N.TH3.D3V\033[0m
+\033[1;36m    ██╗   ██╗██╗   ██╗███╗   ██╗██╗  ██╗   \033[0m
+\033[1;36m    ██║   ██║██║   ██║████╗  ██║██║ ██╔╝   \033[0m
+\033[1;36m    ██║   ██║██║   ██║██╔██╗ ██║█████╔╝    \033[0m
+\033[1;36m    ╚██╗ ██╔╝╚██╗ ██╔╝██║╚██╗██║██╔═██╗    \033[0m
+\033[1;36m     ╚████╔╝  ╚████╔╝ ██║ ╚████║██║  ██╗   \033[0m
+\033[1;36m      ╚═══╝    ╚═══╝  ╚═╝  ╚═══╝╚═╝  ╚═╝   \033[0m
+    """
+    print(banner)
+    print(f"\033[1;36m[>] Bot:\033[0m \033[1;32m{bot.user}\033[0m")
+    print(f"\033[1;36m[>] ID:\033[0m \033[1;32m{bot.user.id}\033[0m")
+    print(f"\033[1;36m[>] Servers:\033[0m \033[1;32m{guild_count}\033[0m")
+    print(f"\033[1;36m[>] Prefix:\033[0m \033[1;32m{prefix}\033[0m")
+    print(f"\033[1;36m[>] Python:\033[0m \033[1;32m{python_ver}\033[0m")
+    print(f"\033[1;36m[>] Discord.py:\033[0m \033[1;32m{discord_ver}\033[0m")
+    print(f"\033[1;36m{'-'*54}\033[0m")
+    print(f"\033[1;32m[SUCCESS] {__NAME__} da san sang. Go {prefix}menu de mo Menu.\033[0m")
 
 bot.run(token)
