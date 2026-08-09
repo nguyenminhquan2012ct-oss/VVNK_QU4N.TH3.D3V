@@ -1936,7 +1936,7 @@ async def on_ready():
     discord_ver = discord.__version__
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     print(f"\033[1;36m{'='*50}\033[0m")
-        print(f"\033[1;34m      {__NAME__} is Online - QU4N.TH3.D3V\033[0m")
+    print(f"\033[1;34m      {__NAME__} is Online - QU4N.TH3.D3V\033[0m")
     print(f"\033[1;36m{'='*50}\033[0m")
     print(f"\033[1;32m👤 Bot Name: \033[0m{bot.user.name}#{bot.user.discriminator}")
     print(f"\033[1;32m🆔 Bot ID: \033[0m{bot.user.id}")
