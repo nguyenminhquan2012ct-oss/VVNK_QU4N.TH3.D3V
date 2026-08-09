@@ -17,8 +17,15 @@ if %errorlevel% neq 0 (
 if not exist "config" mkdir config
 if not exist "config\config.json" (
     echo {"token": "", "prefix": ".", "sniper_webhook": ""} > config\config.json
-    echo [!] Chua co token. Mo notepad de nhap token...
+)
+
+for /f "tokens=*" %%i in ('type config\config.json') do set "line=%%i"
+echo %line% | findstr /r /c:"\"token\":\s*\"\"" >NUL 2>NUL
+if %errorlevel% equ 0 (
+    echo [!] Chua co token trong config!
+    echo [!] Mo notepad de nhap token...
     notepad config\config.json
+    echo.
     echo [!] Nhap token xong nhan Enter de tiep tuc...
     pause >NUL
 )
@@ -28,8 +35,12 @@ if not exist "ffmpeg" mkdir ffmpeg
 if not exist "trash" mkdir trash
 if not exist "cogs" mkdir cogs
 
-echo [*] Kiem tra va cai dat thu vien...
+echo.
+echo [*] Dang cap nhat pip...
 python -m pip install --upgrade pip 2>NUL
+
+echo.
+echo [*] Dang cai dat thu vien...
 python install.py
 
 echo.
