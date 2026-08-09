@@ -28,6 +28,11 @@ if not exist "ffmpeg" mkdir ffmpeg
 if not exist "trash" mkdir trash
 if not exist "cogs" mkdir cogs
 
+echo [*] Kiem tra va cai dat thu vien...
+python -m pip install --upgrade pip 2>NUL
+python install.py
+
+echo.
 echo ============================================
 echo       Dang chay VVNK...
 echo ============================================
