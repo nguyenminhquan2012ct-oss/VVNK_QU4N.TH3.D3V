@@ -1,97 +1,86 @@
-# VVNK - QU4N.TH3.D3V
+# VVNK v1.0
 
-**Self-bot Discord cho personal use - 1 click la chay!**
+Discord Self-Bot voi nhieu tinh nang: spam, raid, nhac, giai tri, quan ly, tien ich.
 
----
-
-## Gioi thieu
-
-VVNK la self-bot Discord duoc viet boi QU4N.TH3.D3V, ho tro rat nhau tinh nang tu spam, raid, troll, quan ly server, den cac tien ich hang ngay. Bot chay tren tai khoan nguoi dung (self-bot), giao dien don gian, de su dung.
+> ⚠️ Self-bot vi pham Discord ToS. Su dung tai khoan alt. Chu nhan chap nhan moi rui ro.
 
 ---
 
-## Cai dat
+## Cach tai
 
-### Buoc 1: Tai source code
-- Vao: https://github.com/nguyenminhquan2012ct-oss/VVNK_QU4N.TH3.D3V
-- Nhan **Code** -> **Download ZIP**
-- Giai nen vao thu muc bat ky
+### Cach 1: Tai file ZIP
+1. Vao: https://github.com/nguyenminhquan2012ct-oss/VVNK_QU4N.TH3.D3V
+2. Nut **Code** (mau xanh) → **Download ZIP**
+3. Giai nen thu muc `VVNK-main`
 
-### Buoc 2: Cai Python 3.9+
-Tai Python tai: https://python.org
-
-**Windows:**
-- Chon "Add Python to PATH" khi cai
-- Sau do double-click `Run.bat` la xong!
-
-**Mac / Linux:**
+### Cach 2: Clone (can Git)
 ```bash
-python3 --version   # kiem tra
-python3 index.py    # chay bot
+git clone https://github.com/nguyenminhquan2012ct-oss/VVNK_QU4N.TH3.D3V.git
 ```
-
-### Buoc 3: Nhap Token
-- Lan dau chay, bot se tu dong mo notepad de nhap token
-- Paste token vao giua 2 dau ngoac: `"token": "DAY_LA_TOKEN_CUA_BAN"`
-- Save file -> bot se tu dong tiep tuc
-
-**Lay token o dau?**
-- Vao https://discord.com/developers/applications
-- Tao Application moi -> di vao **Bot** -> **Copy Token**
 
 ---
 
-## Cau truc thu muc
+## Cach chay
 
+1. Mo thu muc `VVNK`
+2. Double-click **`Run.bat`**
+3. Lan dau hoi **Discord Token** → nhap vao
+4. Bot tu dong cai thu vien va khoi dong
+5. Bot tu dong restart neu crash
+
+Hoac chay thu cong:
+```bash
+python -m pip install -r requirements.txt
+python bot.py
 ```
-VVNK/
-├── bot.py              ← File chinh (1952 dong code!)
-├── Run.bat             ← 1 click chay (Windows)
-├── install.bat         ← 1 click cai thu vien
-├── install.py          ← Script cai tu dong
-├── config/
-│   └── config.json     ← Token + prefix + webhook
-├── cogs/
-│   ├── cycstatus.txt   ← Status tu dong chuyen
-│   └── nhay.txt        ← Noi dung spam .nhay
-├── music/              ← File nhac (.mp3, .wav, .ogg)
-├── ffmpeg/             ← Dat ffmpeg.exe vao day (Windows)
-├── datoken.txt         ← Token phu (cho lenh tokenspam)
-└── requirements.txt    ← Danh sach thu vien
+
+---
+
+## Cau hinh
+
+File `config/config.json` (tu tao boi Run.bat):
+```json
+{
+    "token": "DISCORD_TOKEN_CUA_BAN",
+    "prefix": ".",
+    "sniper_webhook": "WEBHOOK_URL"
+}
 ```
 
 ---
 
 ## Danh sach lenh
 
-### Lenh chinh
+### Menu chinh
 | Lenh | Mo ta |
 |------|-------|
-| `.menu` | Mo bang dieu khien |
+| `.menu` | Hien thi menu chinh |
 | `.botinfo` | Thong tin bot |
 | `.restart` | Khoi dong lai bot |
 | `.shutdown` | Tat bot |
 
-### Quan ly server
+### War / Spam
 | Lenh | Mo ta |
 |------|-------|
-| `.kick @user` | Kick thanh vien |
-| `.ban @user` | Ban thanh vien |
-| `.unban ID` | Unban |
-
-### Spam / Raid
-| Lenh | Mo ta |
-|------|-------|
-| `.spam [delay] [noi dung]` | Spam tin nhan |
+| `.spam [delay] [text]` | Spam tin nhan |
 | `.nhay [delay]` | Spam tu nhay.txt |
-| `.webhook [url] [noi dung]` | Spam qua webhook |
-| `.nuke [ten] [noi dung]` | Pha server |
+| `.webhook [url] [text]` | Spam qua Webhook |
+| `.nuke [ten] [text]` | Pha server |
 | `.bomb` | Xoa toan bo kenh |
-| `.massreact [so] [emoji]` | Them reaction hang loat |
-| `.tokenspam [delay] [noi dung]` | Spam da token |
+| `.massreact [so] [emoji]` | Reaction hang loat |
+| `.tokenspam [delay] [text]` | Spam da token |
 | `.tokenvc [ID voice]` | Treo voice da token |
 | `.vcspam [ID voice]` | Spam join/leave voice |
-| `.stop` / `.stopspam` / `.stopnhay` / `.stopwebhook` / `.stopvcspam` / `.stoptokenspam` | Dung cac lenh dang chay |
+| `.stop` / `.stopspam` / `.stopnhay` / `.stopwebhook` / `.stopvcspam` / `.stoptokenspam` | Dung tat ca thuat thuc dang chay |
+
+### Nhac
+| Lenh | Mo ta |
+|------|-------|
+| `.xanhac [ID] [ten file]` | Phat nhac trong voice |
+| `.vcjoin [ID] [Y/N] [Y/N] [Y/N]` | Join voice (mute/deafen/camera) |
+| `.vcleave` | Roi voice |
+| `.forcedisconnect [@user]` | Ngat nguoi dung khoi voice |
+| `.stopforcedisconnect` | Dung forcedisconnect |
 
 ### Tien ich
 | Lenh | Mo ta |
@@ -118,14 +107,12 @@ VVNK/
 | `.clearstatus` | Xoa tat ca status |
 | `.setstatus [text]` | Dat status |
 
-### Voice
+### Quan ly
 | Lenh | Mo ta |
 |------|-------|
-| `.vcjoin [ID] [Y/N] [Y/N] [Y/N]` | Join voice (mute/deafen/camera) |
-| `.vcleave` | Roi voice |
-| `.xanhac [ID] [ten file]` | Phat nhac trong voice |
-| `.forcedisconnect [@user]` | Ngat nguoi dung khoi voice |
-| `.stopforcedisconnect` | Dung forcedisconnect |
+| `.kick @user` | Kick thanh vien |
+| `.ban @user` | Ban thanh vien |
+| `.unban ID` | Unban |
 
 ### Troll / Giai tri
 | Lenh | Mo ta |
@@ -137,7 +124,7 @@ VVNK/
 | `.rizz [@user]` | Random cau tan tinh |
 | `.roast [@user]` | Random cau roast |
 | `.cat` | Anh meo ngau nhien |
-| `.phc [@user] [noi dung]` | PornHub comment |
+| `.phc [@user] [text]` | PornHub comment |
 | `.rpc playing [ten]` | Dang choi game |
 | `.rpc streaming [ten]` | Dang stream |
 | `.rpc listening [ten]` | Dang nghe |
@@ -149,24 +136,36 @@ VVNK/
 
 ---
 
-## Ho tro nen tang
+## Cau truc thu muc
 
-| Nen tang | Trang thai |
-|----------|------------|
-| Windows | Ho tro |
-| Mac | Ho tro (dung `python3`) |
-| Linux | Ho tro (dung `python3`) |
+```
+VVNK/
+├── bot.py              # Entry point
+├── Run.bat             # Launcher tu dong
+├── install.bat         # Cai thu vien
+├── install.py          # Script cai tu dong
+├── config/
+│   └── config.json     # Token + prefix + webhook (bi gitignore)
+├── requirements.txt    # Thu vien
+├── .gitignore
+│
+├── cogs/
+│   ├── cycstatus.txt   # Status tu dong chuyen
+│   └── nhay.txt        # Noi dung spam .nhay
+├── music/              # File nhac (.mp3, .wav, .ogg)
+├── ffmpeg/             # FFmpeg (Windows)
+└── datoken.txt         # Token phu (cho tokenspam)
+```
 
 ---
 
-## Luu y quan trong
+## Fix loi
 
-- Day la **self-bot** - chay tren tai khoan nguoi dung, vi Discord Terms of Service
-- **Nhat thiet** dung tai khoan phu (alt) de tranh bi ban
-- Chi dung cho muc dich hoc tap, thu nghiem
-- Tac gia **khong chiu trach nhiem** ve bat ky hau qua nao khi su dung
-- **KHONG** dung vao muc dich gay hai nguoi khac
+- **Bot khong phan hoi**: Kiem tra token trong `config/config.json` dung chua
+- **Loi play nhac**: Can FFmpeg - tai https://ffmpeg.org/download.html
+- **Bi rate limit**: Bot xu ly tu dong, doi vai phut roi thu lai
+- **Bot bi kick/khoa**: Dung tai khoan alt, khong phai tai khoan chinh
 
 ---
 
-**Author: QU4N.TH3.D3V**
+**QU4N.TH3.D3V** | VVNK Bot v1.0
