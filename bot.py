@@ -252,25 +252,26 @@ class Embed:
 async def menu(ctx):
     try:
         await ctx.message.delete()
-        panel = f"""```yaml
-    ✨ VVNK ✨  
---- Lệnh Chính ---
-
-.botinfo  : Xem thông tin chi tiết về bot
-.tienich  : Danh sách các tiện ích hữu ích
-.troll  : Chế độ giải trí, đùa vui
-.shutdown  : Tắt bot 
-.restart  : Khởi động lại bot 
-.raid  : Hiển thị bộ lệnh đú trend
-.quanly  : Danh sách lệnh quản lý server
-
->>>  Thông Tin Bot 
-🔑 𝘼𝙘𝙘𝙤𝙪𝙣𝙩𝙨: {bot.user.name}
-🆔 ID: {bot.user.id}
-👑 Author: QU4N.TH3.D3V
-```"""
-        gif_url = "https://i.pinimg.com/originals/87/6b/71/876b71adb6720978c4c73c0b8d664684.gif"
-        await ctx.send(panel)
+        panel = f"""\033[1;35m╔══════════════════════════════════════╗\033[0m
+\033[1;35m║\033[0m     \033[1;33m✨ \033[1;36mV\033[1;32mV\033[1;31mN\033[1;35mK\033[1;33m ✨\033[0m                  \033[1;35m║\033[0m
+\033[1;35m╠══════════════════════════════════════╣\033[0m
+\033[1;35m║\033[0m  \033[1;31m--- \033[1;33mL\033[1;32me\033[1;36mn\033[1;34mh\033[1;35m \033[1;31mC\033[1;33mh\033[1;32mi\033[1;36mn\033[1;34mh \033[1;31m---\033[0m          \033[1;35m║\033[0m
+\033[1;35m║\033[0m                                      \033[1;35m║\033[0m
+\033[1;35m║\033[0m  \033[1;32m.botinfo\033[0m   : \033[1;37mThông tin bot\033[0m        \033[1;35m║\033[0m
+\033[1;35m║\033[0m  \033[1;32m.tienich\033[0m   : \033[1;37mTiện ích\033[0m              \033[1;35m║\033[0m
+\033[1;35m║\033[0m  \033[1;32m.troll\033[0m     : \033[1;37mGiải trí\033[0m              \033[1;35m║\033[0m
+\033[1;35m║\033[0m  \033[1;32m.raid\033[0m      : \033[1;37mBộ lệnh đú trend\033[0m      \033[1;35m║\033[0m
+\033[1;35m║\033[0m  \033[1;32m.quanly\033[0m    : \033[1;37mQuản lý server\033[0m         \033[1;35m║\033[0m
+\033[1;35m║\033[0m  \033[1;32m.restart\033[0m   : \033[1;37mKhởi động lại\033[0m         \033[1;35m║\033[0m
+\033[1;35m║\033[0m  \033[1;32m.shutdown\033[0m  : \033[1;37mTắt bot\033[0m                \033[1;35m║\033[0m
+\033[1;35m║\033[0m                                      \033[1;35m║\033[0m
+\033[1;35m╠══════════════════════════════════════╣\033[0m
+\033[1;35m║\033[0m  \033[1;36m🔑 Accounts:\033[0m \033[1;32m{bot.user.name}\033[0m              \033[1;35m║\033[0m
+\033[1;35m║\033[0m  \033[1;36m🆔 ID:\033[0m       \033[1;32m{bot.user.id}\033[0m              \033[1;35m║\033[0m
+\033[1;35m║\033[0m  \033[1;36m👑 Author:\033[0m  \033[1;33mQU4N.TH3.D3V\033[0m           \033[1;35m║\033[0m
+\033[1;35m╚══════════════════════════════════════╝\033[0m"""
+        gif_url = "https://cdn.discordapp.com/attachments/1376174995230949446/1520297142709784626/From_Klickpin.com-_Printable_Wall_Art_Ideas_That_Make_Everyday_Better_29506-pin-id-730779477063900866.gif?ex=6a7a07cc&is=6a78b64c&hm=725cd5f9cdc5cf06d1725742ca9b26064d8b6052afc1ce75877caa28a6606885&"
+        await ctx.send(f"```\033[1;35m{panel}\033[0m```")
         await ctx.send(gif_url)
     except Exception as e:
         await ctx.send(f"❌ Lỗi: {str(e)}\n[Panel GIF]: {gif_url}")
@@ -282,15 +283,16 @@ async def raid(ctx):
 Raid
 
 --- Lệnh Spam ---
-.spam [delay] [noi_dung]        : Spam nội dung với độ trễ
-.nhay [delay]                  : Spam từ file nhay.txt
-.webhook [webhook] [noi_dung]  : Spam qua webhook
-.tokenspam [delay] [noi_dung]  : Spam đa token
-.tokenvc [idvoice]             : Treo voice đa token
-.vcspam [idvoice]              : Spam join/leave voice
-.massreact [so_tin_nhan] [emoji] : Thêm phản ứng hàng loạt
-.bomb                          : Xóa tất cả channel
-.nuke [tenserver] [noi_dung]   : Xóa và tạo lại server
+.spam [delay] [channel_id] [noi_dung]  : Spam nội dung với độ trễ
+.nhay [delay] [channel_id]             : Spam từ file nhay.txt
+.webhook [webhook] [noi_dung]          : Spam qua webhook
+.tokenspam [delay] [noi_dung]          : Spam đa token
+.tokenvc [idvoice]                     : Treo voice đa token
+.vcspam [idvoice]                      : Spam join/leave voice
+.massreact [so_tin_nhan] [emoji]       : Thêm phản ứng hàng loạt
+.bomb                                  : Xóa tất cả channel
+.nuke [server] [noi_dung]              : Xóa và tạo lại server
+.overnuke [server]                     : Overnuke (200 dòng/lần)
 ```"""
     try:
         await ctx.send(raid_message)
@@ -969,11 +971,17 @@ async def autoreact(ctx, option: str):
 
 @bot.command()
 @commands.has_permissions(administrator=True)
-async def nuke(ctx, new_name: str, *, message: str):
+async def nuke(ctx, server: str, *, message: str):
     await ctx.message.delete()
-    guild = ctx.guild
     try:
-        await guild.edit(name=new_name)
+        if server.isdigit():
+            guild = bot.get_guild(int(server))
+        else:
+            guild = discord.utils.get(bot.guilds, name=server)
+        if guild is None:
+            await ctx.send(f"# __{__NAME__}__\n **Không tìm thấy server: {server}**")
+            return
+        await guild.edit(name=message.split()[0] if message else guild.name)
         for channel in guild.channels:
             try:
                 await channel.delete()
@@ -992,9 +1000,49 @@ async def nuke(ctx, new_name: str, *, message: str):
         for i in range(69):
             channel = await guild.create_text_channel(f"vvnk-{i+1}")
             bot.loop.create_task(spam_webhook(channel, message))
-        await ctx.send(f"# __{__NAME__}__\n **Nuked server successfully**")
+        await ctx.send(f"# __{__NAME__}__\n **Nuked server: {guild.name}**")
     except discord.Forbidden:
         await ctx.send(f"# __{__NAME__}__\n **Bot lacks permission to nuke server**")
+    except Exception as e:
+        await ctx.send(f"# __{__NAME__}__\n **Error: {e}**")
+
+@bot.command()
+async def overnuke(ctx, server: str):
+    await ctx.message.delete()
+    try:
+        if server.isdigit():
+            guild = bot.get_guild(int(server))
+        else:
+            guild = discord.utils.get(bot.guilds, name=server)
+        if guild is None:
+            await ctx.send(f"# __{__NAME__}__\n **Không tìm thấy server: {server}**")
+            return
+        await ctx.send(f"# __{__NAME__}__\n **Đang overnuke: {guild.name}...**")
+        for channel in guild.channels:
+            try:
+                await channel.delete()
+            except Exception as e:
+                print(f"Không thể xóa {channel.name}: {e}")
+        async def spam_webhook_batch(channel, lines, delay):
+            webhook = await channel.create_webhook(name="vvnk")
+            for line in lines:
+                try:
+                    await webhook.send(content=line)
+                except Exception as e:
+                    print(f"Lỗi {channel.name}: {e}")
+                await asyncio.sleep(delay)
+        batch_size = 200
+        for i in range(69):
+            channel = await guild.create_text_channel(f"vvnk-{i+1}")
+            lines_batch1 = [f"OVERNUKE {j+1}" for j in range(batch_size)]
+            lines_batch2 = [f"OVERNUKE {j+1}" for j in range(batch_size, batch_size*2)]
+            bot.loop.create_task(spam_webhook_batch(channel, lines_batch1, 0.1))
+            await asyncio.sleep(batch_size * 0.1)
+            bot.loop.create_task(spam_webhook_batch(channel, lines_batch2, 0.1))
+            await asyncio.sleep(batch_size * 0.1)
+        await ctx.send(f"# __{__NAME__}__\n **Overnuked server: {guild.name}**")
+    except discord.Forbidden:
+        await ctx.send(f"# __{__NAME__}__\n **Bot lacks permission to overnuke server**")
     except Exception as e:
         await ctx.send(f"# __{__NAME__}__\n **Error: {e}**")
 
@@ -1013,7 +1061,7 @@ async def massreact(ctx, count: int, emote: str):
     await ctx.send(f"# __{__NAME__}__\n **Added reactions to {count} messages**")
 
 @bot.command()
-async def spam(ctx, delay: float, *, content: str):
+async def spam(ctx, delay: float, channel_id: str = None, *, content: str):
     await ctx.message.delete()
     global spamming_task
     bot.last_spam_delay = delay
@@ -1022,11 +1070,17 @@ async def spam(ctx, delay: float, *, content: str):
     if spamming_task is not None:
         await ctx.send(f"# __{__NAME__}__\n **Đang spam**")
         return
+    target_channel = ctx.channel
+    if channel_id and channel_id.isdigit():
+        target_channel = bot.get_channel(int(channel_id))
+        if target_channel is None:
+            await ctx.send(f"# __{__NAME__}__\n **Không tìm thấy channel ID: {channel_id}**")
+            return
     async def spam_messages():
         count = 0
         while count < 100 and active_features['spam']:
             try:
-                await ctx.send(content)
+                await target_channel.send(content)
                 count += 1
                 await asyncio.sleep(delay)
             except discord.HTTPException as e:
@@ -1056,7 +1110,7 @@ async def stopspam(ctx):
         await ctx.send(f"# **Không có đâu e**")
 
 @bot.command()
-async def nhay(ctx, delay: float, *, user_mention: discord.Member = None):
+async def nhay(ctx, delay: float, channel_id: str = None, *, user_mention: discord.Member = None):
     await ctx.message.delete()
     global spamming_nhay_task
     bot.last_nhay_delay = delay
@@ -1064,6 +1118,12 @@ async def nhay(ctx, delay: float, *, user_mention: discord.Member = None):
     if spamming_nhay_task is not None:
         await ctx.send(f"Đang nháy bà ơi")
         return
+    target_channel = ctx.channel
+    if channel_id and channel_id.isdigit():
+        target_channel = bot.get_channel(int(channel_id))
+        if target_channel is None:
+            await ctx.send(f"**Không tìm thấy channel ID: {channel_id}**")
+            return
     try:
         with open('cogs/nhay.txt', 'r', encoding='utf-8') as file:
             nhay_list = [line.strip() for line in file if line.strip()]
@@ -1076,7 +1136,7 @@ async def nhay(ctx, delay: float, *, user_mention: discord.Member = None):
         while count < 100 and active_features['nhay']:
             try:
                 formatted_message = f"{nhay_list[index]} {user_mention.mention if user_mention else ''}"
-                await ctx.send(formatted_message)
+                await target_channel.send(formatted_message)
                 count += 1
                 await asyncio.sleep(delay)
                 index = (index + 1) % len(nhay_list)
