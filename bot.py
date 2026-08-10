@@ -1520,10 +1520,10 @@ async def fetch_user_banner(ctx, user: discord.User = None):
 @bot.command()
 async def clear(ctx):
     await ctx.message.delete()
-    invisible = "\u200B" * 2000
+    blank = "ㅤ" * 2000
     for i in range(5):
         try:
-            await ctx.send(invisible)
+            await ctx.send(blank)
         except:
             pass
     await ctx.send(f"***__CLEARED__***")
@@ -1531,8 +1531,8 @@ async def clear(ctx):
 @bot.command()
 async def hackclear(ctx):
     await ctx.message.delete()
-    invisible = "\u200B" * 2000
-    await ctx.send(invisible)
+    blank = "ㅤ" * 2000
+    await ctx.send(blank)
     await ctx.send(f"***__CLEARED__***")
 
 @bot.command()
