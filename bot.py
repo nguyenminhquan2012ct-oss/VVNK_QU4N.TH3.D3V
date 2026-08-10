@@ -56,6 +56,7 @@ spamming_task = None
 webhook_task = None
 spam_voice = None
 spam_task = None
+spam_count = {'spam': 0, 'nhay': 0, 'webhook': 0, 'tokenspam': 0, 'tokenvc': 0, 'vcspam': 0}
 cycleStatus = False
 force_disconnect_user = None
 disconnecting = False
@@ -290,6 +291,7 @@ Raid
 .bomb                                  : Xóa tất cả channel
 .nuke [server] [noi_dung]              : Xóa và tạo lại server
 .overnuke [server]                     : Overnuke (200 dòng/lần)
+.stop                                 : Dừng tất cả
 ```"""
     try:
         await ctx.send(raid_message)
@@ -541,16 +543,67 @@ async def statuscycle(ctx):
         cycleStatus = False
         await ctx.send(f"# __{__NAME__}__\n **Đã dừng cycle status**")
 @bot.command(name="stop")
-async def stop(ctx):
+@bot.command(name="stop")
+async def stop_all(ctx):
     await ctx.message.delete()
-    global cycleStatus
-    cycleStatus = False
-    active_features['cyclestatus'] = False
-    if status_loop.is_running():
-        status_loop.stop()
-        await ctx.send(f"# __{__NAME__}__\n **Đã dừng cycle status**")
-    else:
-        await ctx.send(f"# __{__NAME__}__\n **Status cycle không chạy**")
+    global cycleStatus, spamming_task, spamming_nhay_task, webhook_task, spam_task, disconnecting
+    stopped = []
+    process = psutil.Process()
+    uptime_sec = time.time() - process.create_time()
+    days = int(uptime_sec // 86400)
+    hours = int((uptime_sec % 86400) // 3600)
+    minutes = int((uptime_sec % 3600) // 60)
+    seconds = int(uptime_sec % 60)
+    uptime_str = f"{days}d {hours}h {minutes}m {seconds}s"
+    if active_features['spam']:
+        active_features['spam'] = False
+        if spamming_task:
+            spamming_task.cancel()
+            spamming_task = None
+        stopped.append(f"✅ Spam: {spam_count['spam']} tin")
+    if active_features['nhay']:
+        active_features['nhay'] = False
+        if spamming_nhay_task:
+            spamming_nhay_task.cancel()
+            spamming_nhay_task = None
+        stopped.append(f"✅ Nhay: {spam_count['nhay']} tin")
+    if active_features['webhook']:
+        active_features['webhook'] = False
+        if webhook_task:
+            webhook_task.cancel()
+            webhook_task = None
+        stopped.append(f"✅ Webhook: {spam_count['webhook']} tin")
+    if active_features['tokenspam']:
+        active_features['tokenspam'] = False
+        if spam_task:
+            spam_task.cancel()
+            spam_task = None
+        stopped.append(f"✅ TokenSpam: {spam_count['tokenspam']} tin")
+    if active_features['tokenvc']:
+        active_features['tokenvc'] = False
+        stopped.append(f"✅ TokenVC")
+    if active_features['vcspam']:
+        active_features['vcspam'] = False
+        stopped.append(f"✅ VCSpam")
+    if active_features['forcedisconnect']:
+        active_features['forcedisconnect'] = False
+        disconnecting = False
+        stopped.append(f"✅ Forcedisconnect")
+    if active_features['cyclestatus']:
+        active_features['cyclestatus'] = False
+        cycleStatus = False
+        if status_loop.is_running():
+            status_loop.stop()
+        stopped.append(f"✅ CycleStatus")
+    if not stopped:
+        stopped.append("⚠️ Không có tiến trình nào đang chạy")
+    summary = "\n".join(stopped)
+    msg = await ctx.send(f"```\n🛑 VVNK - Dừng tất cả\n{summary}\n\n⏱ Uptime: {uptime_str}\n```")
+    await asyncio.sleep(10)
+    try:
+        await msg.delete()
+    except:
+        pass
 @bot.command(name="setstatus")
 async def setstatus(ctx, *, status: str):
     await ctx.message.delete()
@@ -916,9 +969,10 @@ async def webhook(ctx, webhook_url: str, *, content: str):
         ]
     }
     async def spam_webhook():
+        nonlocal webhook_count_local
+        webhook_count_local = 0
         async with aiohttp.ClientSession() as session:
-            count = 0
-            while count < 100 and active_features['webhook']:
+            while webhook_count_local < 100 and active_features['webhook']:
                 try:
                     async with session.post(webhook_url, data=json.dumps(embed), headers={"Content-Type": "application/json"}) as response:
                         if response.status == 429:
@@ -929,7 +983,8 @@ async def webhook(ctx, webhook_url: str, *, content: str):
                             await ctx.send(f"# __{__NAME__}__\nWebhook error: {response.status}")
                             active_features['webhook'] = False
                             break
-                        count += 1
+                        webhook_count_local += 1
+                        spam_count['webhook'] += 1
                         await asyncio.sleep(1)
                 except asyncio.CancelledError:
                     active_features['webhook'] = False
@@ -938,20 +993,13 @@ async def webhook(ctx, webhook_url: str, *, content: str):
                     await ctx.send(f"# __{__NAME__}__\nWebhook error: {e}")
                     active_features['webhook'] = False
                     break
+    webhook_count_local = 0
     webhook_task = bot.loop.create_task(spam_webhook())
     await ctx.send(f"# __{__NAME__}__\n **Started webhook spam**")
 
 @bot.command()
 async def stopwebhook(ctx):
-    global webhook_task
-    await ctx.message.delete()
-    active_features['webhook'] = False
-    if webhook_task is not None:
-        webhook_task.cancel()
-        webhook_task = None
-        await ctx.send(f"# __{__NAME__}__\n Đã dừng spam webhook")
-    else:
-        await ctx.send(f"# __{__NAME__}__\n Lệnh webhook không chạy")
+    await ctx.send(f"# __{__NAME__}__\n **Dùng .stop để dừng tất cả**")
 
 @bot.command()
 async def autoreact(ctx, option: str):
@@ -1064,6 +1112,7 @@ async def spam(ctx, delay: float, channel_id: str = None, *, content: str):
     bot.last_spam_delay = delay
     bot.last_spam_content = content
     active_features['spam'] = True
+    spam_count['spam'] = 0
     if spamming_task is not None:
         await ctx.send(f"# __{__NAME__}__\n **Đang spam**")
         return
@@ -1074,11 +1123,13 @@ async def spam(ctx, delay: float, channel_id: str = None, *, content: str):
             await ctx.send(f"# __{__NAME__}__\n **Không tìm thấy channel ID: {channel_id}**")
             return
     async def spam_messages():
-        count = 0
-        while count < 100 and active_features['spam']:
+        nonlocal spam_count_local
+        spam_count_local = 0
+        while spam_count_local < 100 and active_features['spam']:
             try:
                 await target_channel.send(content)
-                count += 1
+                spam_count_local += 1
+                spam_count['spam'] += 1
                 await asyncio.sleep(delay)
             except discord.HTTPException as e:
                 if e.status == 429:
@@ -1091,20 +1142,14 @@ async def spam(ctx, delay: float, channel_id: str = None, *, content: str):
             except asyncio.CancelledError:
                 active_features['spam'] = False
                 break
+    spam_count_local = 0
     spamming_task = bot.loop.create_task(spam_messages())
     await ctx.send(f"# __{__NAME__}__\n **Delay: {delay}s nội dung: {content}**")
 
 @bot.command()
+@bot.command()
 async def stopspam(ctx):
-    await ctx.message.delete()
-    global spamming_task
-    active_features['spam'] = False
-    if spamming_task is not None:
-        spamming_task.cancel()
-        spamming_task = None
-        await ctx.send(f"# **Stopped**")
-    else:
-        await ctx.send(f"# **Không có đâu e**")
+    await ctx.send(f"# __{__NAME__}__\n **Dùng .stop để dừng tất cả**")
 
 @bot.command()
 async def nhay(ctx, delay: float, channel_id: str = None, *, user_mention: discord.Member = None):
@@ -1112,6 +1157,7 @@ async def nhay(ctx, delay: float, channel_id: str = None, *, user_mention: disco
     global spamming_nhay_task
     bot.last_nhay_delay = delay
     active_features['nhay'] = True
+    spam_count['nhay'] = 0
     if spamming_nhay_task is not None:
         await ctx.send(f"Đang nháy bà ơi")
         return
@@ -1128,13 +1174,15 @@ async def nhay(ctx, delay: float, channel_id: str = None, *, user_mention: disco
         await ctx.send(f"**Không tìm thấy tệp nhay.txt**")
         return
     async def spam_nhay():
+        nonlocal nhay_count_local
+        nhay_count_local = 0
         index = 0
-        count = 0
-        while count < 100 and active_features['nhay']:
+        while nhay_count_local < 100 and active_features['nhay']:
             try:
                 formatted_message = f"{nhay_list[index]} {user_mention.mention if user_mention else ''}"
                 await target_channel.send(formatted_message)
-                count += 1
+                nhay_count_local += 1
+                spam_count['nhay'] += 1
                 await asyncio.sleep(delay)
                 index = (index + 1) % len(nhay_list)
             except discord.HTTPException as e:
@@ -1148,20 +1196,13 @@ async def nhay(ctx, delay: float, channel_id: str = None, *, user_mention: disco
             except asyncio.CancelledError:
                 active_features['nhay'] = False
                 break
+    nhay_count_local = 0
     spamming_nhay_task = bot.loop.create_task(spam_nhay())
     await ctx.send(f"**Delay: {delay}**")
 
 @bot.command()
 async def stopnhay(ctx):
-    await ctx.message.delete()
-    global spamming_nhay_task
-    active_features['nhay'] = False
-    if spamming_nhay_task is not None:
-        spamming_nhay_task.cancel()
-        spamming_nhay_task = None
-        await ctx.send(f"# __{__NAME__}__\n **Stopped**")
-    else:
-        await ctx.send(f"# __{__NAME__}__\n **Lệnh nhảy không chạy**")
+    await ctx.send(f"# __{__NAME__}__\n **Dùng .stop để dừng tất cả**")
 
 @bot.command()
 async def afk(ctx, *, reason):
@@ -1805,25 +1846,11 @@ async def tokentreodu(ctx, *, args: str):
 
 @bot.command()
 async def stoptokenspam(ctx):
-    await ctx.message.delete()
-    global spam_task
-    active_features['tokenspam'] = False
-    if spam_task is not None:
-        spam_task.cancel()
-        spam_task = None
-        await ctx.send(f"# __{__NAME__}__\n **Đã dừng spam**")
-    else:
-        await ctx.send(f"# __{__NAME__}__\n **Không có spam đang chạy**")
+    await ctx.send(f"# __{__NAME__}__\n **Dùng .stop để dừng tất cả**")
 
 @bot.command()
 async def stoptreodu(ctx):
-    await ctx.message.delete()
-    global spam_task
-    active_features['tokenspam'] = False
-    if spam_task is not None:
-        spam_task.cancel()
-        spam_task = None
-        await ctx.send(f"# __{__NAME__}__\n **Đã dừng spam treo đú**")
+    await ctx.send(f"# __{__NAME__}__\n **Dùng .stop để dừng tất cả**")
     else:
         await ctx.send(f"# __{__NAME__}__\n **Không có spam treo đú nào đang chạy**")
         
@@ -1976,15 +2003,7 @@ async def tokencheck(ctx, token: str):
 
 @bot.command()
 async def stopvcspam(ctx):
-    await ctx.message.delete()
-    global spam_voice
-    active_features['vcspam'] = False
-    if spam_voice is not None:
-        spam_voice.cancel()
-        spam_voice = None
-        await ctx.send(f"# __{__NAME__}__\n **Đã dừng spam voice**")
-    else:
-        await ctx.send(f"# __{__NAME__}__\n **Lệnh spam voice không chạy**")
+    await ctx.send(f"# __{__NAME__}__\n **Dùng .stop để dừng tất cả**")
 
 @bot.event
 async def on_ready():
