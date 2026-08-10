@@ -252,26 +252,23 @@ class Embed:
 async def menu(ctx):
     try:
         await ctx.message.delete()
-        panel = f"""\033[1;35m╔══════════════════════════════════════╗\033[0m
-\033[1;35m║\033[0m     \033[1;33m✨ \033[1;36mV\033[1;32mV\033[1;31mN\033[1;35mK\033[1;33m ✨\033[0m                  \033[1;35m║\033[0m
-\033[1;35m╠══════════════════════════════════════╣\033[0m
-\033[1;35m║\033[0m  \033[1;31m--- \033[1;33mL\033[1;32me\033[1;36mn\033[1;34mh\033[1;35m \033[1;31mC\033[1;33mh\033[1;32mi\033[1;36mn\033[1;34mh \033[1;31m---\033[0m          \033[1;35m║\033[0m
-\033[1;35m║\033[0m                                      \033[1;35m║\033[0m
-\033[1;35m║\033[0m  \033[1;32m.botinfo\033[0m   : \033[1;37mThông tin bot\033[0m        \033[1;35m║\033[0m
-\033[1;35m║\033[0m  \033[1;32m.tienich\033[0m   : \033[1;37mTiện ích\033[0m              \033[1;35m║\033[0m
-\033[1;35m║\033[0m  \033[1;32m.troll\033[0m     : \033[1;37mGiải trí\033[0m              \033[1;35m║\033[0m
-\033[1;35m║\033[0m  \033[1;32m.raid\033[0m      : \033[1;37mBộ lệnh đú trend\033[0m      \033[1;35m║\033[0m
-\033[1;35m║\033[0m  \033[1;32m.quanly\033[0m    : \033[1;37mQuản lý server\033[0m         \033[1;35m║\033[0m
-\033[1;35m║\033[0m  \033[1;32m.restart\033[0m   : \033[1;37mKhởi động lại\033[0m         \033[1;35m║\033[0m
-\033[1;35m║\033[0m  \033[1;32m.shutdown\033[0m  : \033[1;37mTắt bot\033[0m                \033[1;35m║\033[0m
-\033[1;35m║\033[0m                                      \033[1;35m║\033[0m
-\033[1;35m╠══════════════════════════════════════╣\033[0m
-\033[1;35m║\033[0m  \033[1;36m🔑 Accounts:\033[0m \033[1;32m{bot.user.name}\033[0m              \033[1;35m║\033[0m
-\033[1;35m║\033[0m  \033[1;36m🆔 ID:\033[0m       \033[1;32m{bot.user.id}\033[0m              \033[1;35m║\033[0m
-\033[1;35m║\033[0m  \033[1;36m👑 Author:\033[0m  \033[1;33mQU4N.TH3.D3V\033[0m           \033[1;35m║\033[0m
-\033[1;35m╚══════════════════════════════════════╝\033[0m"""
+        panel = f"""    ✨ VVNK ✨  
+--- Lệnh Chính ---
+
+.botinfo  : Xem thông tin chi tiết về bot
+.tienich  : Danh sách các tiện ích hữu ích
+.troll  : Chế độ giải trí, đùa vui
+.shutdown  : Tắt bot 
+.restart  : Khởi động lại bot 
+.raid  : Hiển thị bộ lệnh đú trend
+.quanly  : Danh sách lệnh quản lý server
+
+>>>  Thông Tin Bot 
+🔑 𝘼𝙘𝙘𝙤𝙪𝙣𝙩𝙨: {bot.user.name}
+🆔 ID: {bot.user.id}
+👑 Author: QU4N.TH3.D3V"""
         gif_url = "https://cdn.discordapp.com/attachments/1376174995230949446/1520297142709784626/From_Klickpin.com-_Printable_Wall_Art_Ideas_That_Make_Everyday_Better_29506-pin-id-730779477063900866.gif?ex=6a7a07cc&is=6a78b64c&hm=725cd5f9cdc5cf06d1725742ca9b26064d8b6052afc1ce75877caa28a6606885&"
-        await ctx.send(f"```\033[1;35m{panel}\033[0m```")
+        await ctx.send(f"```yaml\n{panel}\n```")
         await ctx.send(gif_url)
     except Exception as e:
         await ctx.send(f"❌ Lỗi: {str(e)}\n[Panel GIF]: {gif_url}")
