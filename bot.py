@@ -177,8 +177,8 @@ async def fetch_with_proxy(url, method="GET", headers=None, data=None):
 async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         syntax_map = {
-            "spam": ".spam [delay] [channel_id] [noi_dung]",
-            "nhay": ".nhay [delay] [channel_id]",
+            "spam": ".spam [delay] [channel_id] [noi_dung] (bo trong channel = kenh hien tai)",
+            "nhay": ".nhay [delay] [channel_id] [@user] (bo trong channel = kenh hien tai)",
             "webhook": ".webhook [url] [noi_dung]",
             "nuke": ".nuke [server] [noi_dung]",
             "overnuke": ".overnuke [server]",
@@ -1203,22 +1203,31 @@ async def massreact(ctx, count: int, emote: str):
     await ctx.send(f"# __{__NAME__}__\n **Added reactions to {count} messages**")
 
 @bot.command()
-async def spam(ctx, delay: float, channel_id: str = None, *, content: str):
+async def spam(ctx, delay: float, *, args: str):
     await ctx.message.delete()
     global spamming_task
     bot.last_spam_delay = delay
-    bot.last_spam_content = content
     active_features['spam'] = True
     spam_count['spam'] = 0
     if spamming_task is not None:
         await ctx.send(f"# __{__NAME__}__\n **Đang spam**")
         return
+    args_parts = args.split(None, 1)
+    channel_id = None
+    content = args
+    if args_parts and args_parts[0].isdigit():
+        channel_id = args_parts[0]
+        content = args_parts[1] if len(args_parts) > 1 else ""
     target_channel = ctx.channel
-    if channel_id and channel_id.isdigit():
+    if channel_id:
         target_channel = bot.get_channel(int(channel_id))
         if target_channel is None:
             await ctx.send(f"# __{__NAME__}__\n **Không tìm thấy channel ID: {channel_id}**")
             return
+    if not content:
+        await ctx.send(f"# __{__NAME__}__\n **Nhap noi dung spam**")
+        return
+    bot.last_spam_content = content
     async def spam_messages():
         nonlocal spam_count_local
         spam_count_local = 0
@@ -1263,6 +1272,13 @@ async def nhay(ctx, delay: float, channel_id: str = None, *, user_mention: disco
         if target_channel is None:
             await ctx.send(f"**Không tìm thấy channel ID: {channel_id}**")
             return
+    elif channel_id and not channel_id.isdigit():
+        if user_mention is None:
+            try:
+                user_mention = await commands.MemberConverter().convert(ctx, channel_id)
+                channel_id = None
+            except:
+                pass
     try:
         with open('cogs/nhay.txt', 'r', encoding='utf-8') as file:
             nhay_list = [line.strip() for line in file if line.strip()]
