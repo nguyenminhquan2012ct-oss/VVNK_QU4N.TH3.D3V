@@ -42,6 +42,7 @@ active_features = {
     'auto_react': False,
     'spam': False,
     'nhay': False,
+    'ngon': False,
     'webhook': False,
     'tokenspam': False,
     'tokenvc': False,
@@ -53,11 +54,12 @@ bot = commands.Bot(command_prefix=prefix, self_bot=True)
 bot.remove_command('help')
 vietnam_tz = timezone('Asia/Ho_Chi_Minh')
 spamming_nhay_task = None
+spamming_ngon_task = None
 spamming_task = None
 webhook_task = None
 spam_voice = None
 spam_task = None
-spam_count = {'spam': 0, 'nhay': 0, 'webhook': 0, 'tokenspam': 0, 'tokenvc': 0, 'vcspam': 0}
+spam_count = {'spam': 0, 'nhay': 0, 'ngon': 0, 'webhook': 0, 'tokenspam': 0, 'tokenvc': 0, 'vcspam': 0}
 cycleStatus = False
 force_disconnect_user = None
 disconnecting = False
@@ -656,7 +658,7 @@ async def statuscycle(ctx):
 @bot.command(name="stop")
 async def stop_all(ctx):
     await ctx.message.delete()
-    global cycleStatus, spamming_task, spamming_nhay_task, webhook_task, spam_task, disconnecting
+    global cycleStatus, spamming_task, spamming_nhay_task, spamming_ngon_task, webhook_task, spam_task, disconnecting
     stopped = []
     process = psutil.Process()
     uptime_sec = time.time() - process.create_time()
@@ -677,6 +679,12 @@ async def stop_all(ctx):
             spamming_nhay_task.cancel()
             spamming_nhay_task = None
         stopped.append(f"✅ Nhay: {spam_count['nhay']} tin")
+    if active_features['ngon']:
+        active_features['ngon'] = False
+        if spamming_ngon_task:
+            spamming_ngon_task.cancel()
+            spamming_ngon_task = None
+        stopped.append(f"✅ Ngon: {spam_count['ngon']} tin")
     if active_features['webhook']:
         active_features['webhook'] = False
         if webhook_task:
@@ -1379,6 +1387,66 @@ async def nhay(ctx, delay: float, channel_id: str = None, *, user_mention: disco
 
 @bot.command()
 async def stopnhay(ctx):
+    await ctx.send(f"# __{__NAME__}__\n **Dùng .stop để dừng tất cả**")
+
+@bot.command()
+async def ngon(ctx, delay: float, channel_id: str = None, *, user_mention: discord.Member = None):
+    await ctx.message.delete()
+    global spamming_ngon_task
+    bot.last_ngon_delay = delay
+    active_features['ngon'] = True
+    spam_count['ngon'] = 0
+    if spamming_ngon_task is not None:
+        await ctx.send(f"Đang ngon bà ơi")
+        return
+    target_channel = ctx.channel
+    if channel_id and channel_id.isdigit():
+        target_channel = bot.get_channel(int(channel_id))
+        if target_channel is None:
+            await ctx.send(f"**Không tìm thấy channel ID: {channel_id}**")
+            return
+    elif channel_id and not channel_id.isdigit():
+        if user_mention is None:
+            try:
+                user_mention = await commands.MemberConverter().convert(ctx, channel_id)
+                channel_id = None
+            except:
+                pass
+    try:
+        with open('ngon.txt', 'r', encoding='utf-8') as file:
+            ngon_list = [line.strip() for line in file if line.strip()]
+    except FileNotFoundError:
+        await ctx.send(f"**Không tìm thấy tệp ngon.txt**")
+        return
+    async def spam_ngon():
+        nonlocal ngon_count_local
+        ngon_count_local = 0
+        index = 0
+        while ngon_count_local < 100 and active_features['ngon']:
+            try:
+                formatted_message = f"{ngon_list[index]} {user_mention.mention if user_mention else ''}"
+                await target_channel.send(formatted_message)
+                ngon_count_local += 1
+                spam_count['ngon'] += 1
+                await asyncio.sleep(delay)
+                index = (index + 1) % len(ngon_list)
+            except discord.HTTPException as e:
+                if e.status == 429:
+                    retry_after = e.retry_after or 2
+                    await asyncio.sleep(retry_after)
+                else:
+                    await ctx.send(f"Ngon error: {e}")
+                    active_features['ngon'] = False
+                    break
+            except asyncio.CancelledError:
+                active_features['ngon'] = False
+                break
+    ngon_count_local = 0
+    spamming_ngon_task = bot.loop.create_task(spam_ngon())
+    await ctx.send(f"**Delay: {delay}**")
+
+@bot.command()
+async def stopngon(ctx):
     await ctx.send(f"# __{__NAME__}__\n **Dùng .stop để dừng tất cả**")
 
 @bot.command()
