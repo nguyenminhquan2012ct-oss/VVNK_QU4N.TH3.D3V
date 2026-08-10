@@ -48,5 +48,8 @@ echo       Dang mo 2 cua so...
 echo ============================================
 echo.
 
-start "VVNK - Banner" cmd /k "python banner.py"
-start "VVNK - Log" cmd /k "python bot.py"
+type nul > bot.log
+start "VVNK - Log" cmd /c "python log_watcher.py & pause"
+timeout /t 1 /nobreak >NUL
+python bot.py
+pause
