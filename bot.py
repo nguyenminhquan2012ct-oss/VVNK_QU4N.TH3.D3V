@@ -125,6 +125,9 @@ def mainHeader():
 proxy_list = []
 proxy_cycle = None
 proxy_file = "config/proxies.txt"
+last_proxy_time = 0
+PROXY_ROTATE_MIN = 0
+PROXY_ROTATE_MAX = 2
 
 def load_proxies():
     global proxy_list, proxy_cycle
@@ -140,10 +143,24 @@ def load_proxies():
         print(f"\033[1;33m[PROXY] {proxy_file} not found, using direct connection\033[0m")
 
 def get_next_proxy():
-    global proxy_cycle
+    global proxy_cycle, last_proxy_time
     if proxy_cycle:
+        last_proxy_time = time.time()
         return next(proxy_cycle)
     return None
+
+def get_random_proxy():
+    global last_proxy_time
+    if proxy_list:
+        last_proxy_time = time.time()
+        return random.choice(proxy_list)
+    return None
+
+def should_rotate_proxy():
+    if not proxy_list:
+        return False
+    elapsed = time.time() - last_proxy_time
+    return elapsed >= random.uniform(PROXY_ROTATE_MIN, PROXY_ROTATE_MAX)
 
 def get_proxy_dict():
     proxy = get_next_proxy()
@@ -153,7 +170,7 @@ def get_proxy_dict():
 
 async def fetch_with_proxy(url, method="GET", headers=None, data=None):
     for attempt in range(len(proxy_list) + 1):
-        proxy_url = get_next_proxy() if proxy_list else None
+        proxy_url = get_random_proxy() if proxy_list else None
         try:
             async with aiohttp.ClientSession() as session:
                 kwargs = {"headers": headers}
@@ -164,12 +181,14 @@ async def fetch_with_proxy(url, method="GET", headers=None, data=None):
                 async with getattr(session, method.lower())(url, **kwargs) as response:
                     if response.status == 429:
                         retry_after = float(response.headers.get("retry-after", 2))
-                        print(f"\033[1;33m[RATELIMIT] Proxy {proxy_url} limited, rotating... ({retry_after}s)\033[0m")
-                        await asyncio.sleep(min(retry_after, 5))
+                        rotate_delay = random.uniform(PROXY_ROTATE_MIN, PROXY_ROTATE_MAX)
+                        print(f"\033[1;33m[RATELIMIT] Proxy {proxy_url} limited, rotating in {rotate_delay:.1f}s...\033[0m")
+                        await asyncio.sleep(rotate_delay)
                         continue
                     return response
         except Exception as e:
             print(f"\033[1;31m[PROXY ERROR] {proxy_url}: {e}\033[0m")
+            await asyncio.sleep(random.uniform(0.1, 0.5))
             continue
     return None
 
@@ -178,7 +197,7 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         syntax_map = {
             "spam": ".spam [delay] [channel_id] [noi_dung] (bo trong channel = kenh hien tai)",
-            "nhay": ".nhay [delay] [channel_id] [@user] (bo trong channel = kenh hien tai)",
+            "nhay": ".nhay [delay] [channel_id] [@user] (bo qua = kenh hien tai, khong tag)",
             "webhook": ".webhook [url] [noi_dung]",
             "nuke": ".nuke [server] [noi_dung]",
             "overnuke": ".overnuke [server]",
@@ -1064,7 +1083,7 @@ async def webhook(ctx, webhook_url: str, *, content: str):
         nonlocal webhook_count_local
         webhook_count_local = 0
         while webhook_count_local < 100 and active_features['webhook']:
-            proxy_url = get_next_proxy() if proxy_list else None
+            proxy_url = get_random_proxy() if proxy_list else None
             try:
                 async with aiohttp.ClientSession() as session:
                     kwargs = {"data": json.dumps(embed), "headers": {"Content-Type": "application/json"}}
@@ -1072,9 +1091,9 @@ async def webhook(ctx, webhook_url: str, *, content: str):
                         kwargs["proxy"] = proxy_url
                     async with session.post(webhook_url, **kwargs) as response:
                         if response.status == 429:
-                            retry_after = float(response.headers.get("retry-after", 2))
-                            print(f"\033[1;33m[RATELIMIT] Webhook limited, rotating proxy... ({retry_after}s)\033[0m")
-                            await asyncio.sleep(min(retry_after, 5))
+                            rotate_delay = random.uniform(PROXY_ROTATE_MIN, PROXY_ROTATE_MAX)
+                            print(f"\033[1;33m[RATELIMIT] Webhook limited, rotating in {rotate_delay:.1f}s...\033[0m")
+                            await asyncio.sleep(rotate_delay)
                             continue
                         if response.status != 204:
                             await ctx.send(f"# __{__NAME__}__\nWebhook error: {response.status}")
@@ -1082,7 +1101,7 @@ async def webhook(ctx, webhook_url: str, *, content: str):
                             break
                         webhook_count_local += 1
                         spam_count['webhook'] += 1
-                        await asyncio.sleep(1)
+                        await asyncio.sleep(random.uniform(0.5, 1.5))
             except asyncio.CancelledError:
                 active_features['webhook'] = False
                 break
@@ -1834,7 +1853,7 @@ async def tokenspam(ctx, *, args: str):
                 await asyncio.sleep(delay)
                 continue
             used_messages.add(message)
-            proxy_url = get_next_proxy() if proxy_list else None
+            proxy_url = get_random_proxy() if proxy_list else None
             try:
                 async with aiohttp.ClientSession() as session:
                     kwargs = {"headers": headers, "json": {"content": message}}
@@ -1849,9 +1868,9 @@ async def tokenspam(ctx, *, args: str):
                             tokenspam_count_local += 1
                             spam_count['tokenspam'] += 1
                         elif response.status == 429:
-                            retry_after = float(response.headers.get("retry-after", 2))
-                            print(f"\033[1;33m[RATELIMIT] Token limited, rotating proxy... ({retry_after}s)\033[0m")
-                            await asyncio.sleep(min(retry_after, 5))
+                            rotate_delay = random.uniform(PROXY_ROTATE_MIN, PROXY_ROTATE_MAX)
+                            print(f"\033[1;33m[RATELIMIT] Token limited, rotating in {rotate_delay:.1f}s...\033[0m")
+                            await asyncio.sleep(rotate_delay)
                         else:
                             print(f"Token {token[:10]}... loi: {response.status}")
                             break
