@@ -44,13 +44,9 @@ python install.py
 
 echo.
 echo ============================================
-echo       Dang chay VVNK...
+echo       Dang mo 2 cua so...
 echo ============================================
 echo.
 
-:restart
-python bot.py
-echo.
-echo [*] Da dung. Khoi dong lai sau 3 giay...
-timeout /t 3 >NUL
-goto restart
+start "VVNK - Banner" cmd /k "python banner.py"
+start "VVNK - Log" cmd /k "python bot.py"

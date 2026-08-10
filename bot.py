@@ -2280,26 +2280,12 @@ async def on_ready():
         print(f"\033[1;33m[PROXY] Fetching proxies from APIs...\033[0m")
         await fetch_proxies_from_api()
     guild_count = len(bot.guilds)
-    python_ver = platform.python_version()
-    discord_ver = discord.__version__
-    banner = f"""\033[1;33m
-                  QU4N.TH3.D3V\033[0m
-\033[1;36m    ██╗   ██╗██╗   ██╗███╗   ██╗██╗  ██╗   \033[0m
-\033[1;36m    ██║   ██║██║   ██║████╗  ██║██║ ██╔╝   \033[0m
-\033[1;36m    ██║   ██║██║   ██║██╔██╗ ██║█████╔╝    \033[0m
-\033[1;36m    ╚██╗ ██╔╝╚██╗ ██╔╝██║╚██╗██║██╔═██╗    \033[0m
-\033[1;36m     ╚████╔╝  ╚████╔╝ ██║ ╚████║██║  ██╗   \033[0m
-\033[1;36m      ╚═══╝    ╚═══╝  ╚═╝  ╚═══╝╚═╝  ╚═╝   \033[0m
-    """
-    print(banner)
     print(f"\033[1;36m[>] Bot:\033[0m \033[1;32m{bot.user}\033[0m")
     print(f"\033[1;36m[>] ID:\033[0m \033[1;32m{bot.user.id}\033[0m")
     print(f"\033[1;36m[>] Servers:\033[0m \033[1;32m{guild_count}\033[0m")
     print(f"\033[1;36m[>] Prefix:\033[0m \033[1;32m{prefix}\033[0m")
-    print(f"\033[1;36m[>] Python:\033[0m \033[1;32m{python_ver}\033[0m")
-    print(f"\033[1;36m[>] Discord.py:\033[0m \033[1;32m{discord_ver}\033[0m")
     print(f"\033[1;36m[>] Proxies:\033[0m \033[1;32m{len(proxy_list)} loaded\033[0m")
     print(f"\033[1;36m{'-'*54}\033[0m")
-    print(f"\033[1;32m[SUCCESS] {__NAME__} đã sẵn sàng. Gõ {prefix}menu để mở Menu.\033[0m")
+    print(f"\033[1;32m[SUCCESS] {__NAME__} da san sang. Go {prefix}menu de mo Menu.\033[0m")
 
 bot.run(token)
