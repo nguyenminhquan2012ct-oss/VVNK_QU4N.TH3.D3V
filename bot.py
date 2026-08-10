@@ -1146,7 +1146,6 @@ async def spam(ctx, delay: float, channel_id: str = None, *, content: str):
     await ctx.send(f"# __{__NAME__}__\n **Delay: {delay}s nội dung: {content}**")
 
 @bot.command()
-@bot.command()
 async def stopspam(ctx):
     await ctx.send(f"# __{__NAME__}__\n **Dùng .stop để dừng tất cả**")
 
