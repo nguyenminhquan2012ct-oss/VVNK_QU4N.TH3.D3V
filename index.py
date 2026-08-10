@@ -20,7 +20,7 @@ def install_package(package):
         subprocess.check_call([sys.executable, "-m", "pip", "install", package])
         print(f"{package} installed successfully!")
     except subprocess.CalledProcessError as e:
-        print(f"Loi khi cai dat {package}: {str(e)}")
+        print(f"Lỗi khi cài đặt {package}: {str(e)}")
 
 def install_all_packages(packages):
     for package in packages:

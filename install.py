@@ -20,15 +20,15 @@ def install_package(package):
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        print(f"  [+] {package} - thanh cong")
+        print(f"  [+] {package} - thành công")
         return True
     except subprocess.CalledProcessError:
-        print(f"  [-] {package} - that bai")
+        print(f"  [-] {package} - thất bại")
         return False
 
 def main():
     print("=" * 50)
-    print("  VVNK - Cai dat thu vien")
+    print("  VVNK - Cài đặt thư viện")
     print("=" * 50)
     print()
 
@@ -43,11 +43,11 @@ def main():
             fail += 1
 
     print()
-    print(f"  Hoan thanh: {success} thanh cong, {fail} that bai")
+    print(f"  Hoàn thành: {success} thành công, {fail} thất bại")
     print()
 
     if fail > 0:
-        input("Nhan Enter de thoat...")
+        input("Nhấn Enter để thoát...")
 
 if __name__ == "__main__":
     main()

@@ -1,28 +1,28 @@
 @echo off
-title VVNK - Cai dat thu vien
+title VVNK - Cài đặt thư viện
 color 0A
 
 echo ============================================
-echo       VVNK - Cai dat thu vien
+echo       VVNK - Cài đặt thư viện
 echo ============================================
 echo.
 
 python --version 2>NUL
 if %errorlevel% neq 0 (
-    echo [!] Python chua duoc cai dat!
+    echo [!] Python chưa được cài đặt!
     pause
     exit /b 1
 )
 
-echo [*] Dang cap nhat pip...
+echo [*] Đang cập nhật pip...
 python -m pip install --upgrade pip
 
 echo.
-echo [*] Dang cai dat thu vien...
+echo [*] Đang cài đặt thư viện...
 python install.py
 
 echo.
 echo ============================================
-echo       Cai dat xong!
+echo       Cài đặt xong!
 echo ============================================
 pause

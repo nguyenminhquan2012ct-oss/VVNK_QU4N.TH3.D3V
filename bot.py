@@ -196,38 +196,38 @@ async def fetch_with_proxy(url, method="GET", headers=None, data=None):
 async def on_command_error(ctx, error):
     if isinstance(error, commands.MissingRequiredArgument):
         syntax_map = {
-            "spam": ".spam [delay] [channel_id] [noi_dung] (bo trong channel = kenh hien tai)",
-            "nhay": ".nhay [delay] [channel_id] [@user] (bo qua = kenh hien tai, khong tag)",
-            "webhook": ".webhook [url] [noi_dung]",
-            "nuke": ".nuke [server] - xoa kenh + tao vo han kenh + 300 dong/kenh (mac dinh: sv hien tai)",
-            "overnuke": ".overnuke [server] - xa 150 dong nhay.txt tat ca kenh (mac dinh: sv hien tai)",
-            "tokenspam": ".tokenspam [delay] [file/noi_dung]",
-            "massreact": ".massreact [so] [emoji]",
+            "spam": ".spam [delay] [channel_id] [nội_dung] (bỏ trong channel = kênh hiện tại)",
+            "nhay": ".nhay [delay] [channel_id] [@user] (bỏ qua = kênh hiện tại, không tag)",
+            "webhook": ".webhook [url] [nội_dung]",
+            "nuke": ".nuke [server] - xóa kênh + tạo vô hạn kênh + 300 dòng/kênh (mặc định: sv hiện tại)",
+            "overnuke": ".overnuke [server] - xả 150 dòng nhay.txt tất cả kênh (mặc định: sv hiện tại)",
+            "tokenspam": ".tokenspam [delay] [file/nội_dung]",
+            "massreact": ".massreact [số] [emoji]",
             "kick": ".kick [@user]",
             "ban": ".ban [@user]",
             "unban": ".unban [user_id]",
-            "clear": ".clear [so_luong]",
-            "afk": ".afk [ly_do]",
+            "clear": ".clear [số_lượng]",
+            "afk": ".afk [lý_do]",
             "setstatus": ".setstatus [text]",
             "addstatus": ".addstatus [text]",
             "cloneemoji": ".cloneemoji [emoji]",
-            "clone_channels": ".clone_channels [id_cu] [id_moi]",
-            "clone_roles": ".clone_roles [id_cu] [id_moi]",
+            "clone_channels": ".clone_channels [id_cũ] [id_mới]",
+            "clone_roles": ".clone_roles [id_cũ] [id_mới]",
             "tokencheck": ".tokencheck [token]",
             "checkpromo": ".checkpromo [link]",
             "iplookup": ".iplookup [ip]",
-            "insta": ".insta [ten]",
-            "math": ".math [phep_tinh]",
+            "insta": ".insta [tên]",
+            "math": ".math [phép_tính]",
             "phc": ".phc [@user] [text]",
-            "rpc": ".rpc [type] [ten]",
-            "nsfw": ".nsfw [loai]",
+            "rpc": ".rpc [type] [tên]",
+            "nsfw": ".nsfw [loại]",
             "rizz": ".rizz [@user]",
             "roast": ".roast [@user]",
             "forcedisconnect": ".forcedisconnect [@user]",
             "tokenvc": ".tokenvc [voice_id]",
             "vcspam": ".vcspam [voice_id]",
             "vcjoin": ".vcjoin [voice_id] [Y/N] [Y/N] [Y/N]",
-            "xanhac": ".xanhac [voice_id] [ten_file]",
+            "xanhac": ".xanhac [voice_id] [tên_file]",
         }
         cmd = ctx.command.name
         syntax = syntax_map.get(cmd, f".{cmd} [tham_so]")
@@ -1179,7 +1179,7 @@ async def nuke(ctx, server: str = None):
                         pass
                     await asyncio.sleep(0.05)
             except Exception as e:
-                print(f"Loi {channel.name}: {e}")
+                print(f"Lỗi {channel.name}: {e}")
         tasks = []
         for channel in text_channels:
             lines = [random.choice(nhay_list) for _ in range(300)]
@@ -1223,7 +1223,7 @@ async def overnuke(ctx, server: str = None):
                         pass
                     await asyncio.sleep(0.05)
             except Exception as e:
-                print(f"Loi {channel.name}: {e}")
+                print(f"Lỗi {channel.name}: {e}")
         tasks = []
         for channel in text_channels:
             lines = [random.choice(nhay_list) for _ in range(150)]
@@ -1272,7 +1272,7 @@ async def spam(ctx, delay: float, *, args: str):
             await ctx.send(f"# __{__NAME__}__\n **Không tìm thấy channel ID: {channel_id}**")
             return
     if not content:
-        await ctx.send(f"# __{__NAME__}__\n **Nhap noi dung spam**")
+        await ctx.send(f"# __{__NAME__}__\n **Nhập nội dung spam**")
         return
     bot.last_spam_content = content
     async def spam_messages():
@@ -1900,11 +1900,11 @@ async def tokenspam(ctx, *, args: str):
                             print(f"\033[1;33m[RATELIMIT] Token limited, rotating in {rotate_delay:.1f}s...\033[0m")
                             await asyncio.sleep(rotate_delay)
                         else:
-                            print(f"Token {token[:10]}... loi: {response.status}")
+                            print(f"Token {token[:10]}... lỗi: {response.status}")
                             break
                 await asyncio.sleep(delay)
             except Exception as e:
-                print(f"Token {token[:10]}... loi: {e}")
+                print(f"Token {token[:10]}... lỗi: {e}")
                 break
             finally:
                 used_messages.discard(message)
@@ -2199,6 +2199,6 @@ async def on_ready():
     print(f"\033[1;36m[>] Discord.py:\033[0m \033[1;32m{discord_ver}\033[0m")
     print(f"\033[1;36m[>] Proxies:\033[0m \033[1;32m{len(proxy_list)} loaded\033[0m")
     print(f"\033[1;36m{'-'*54}\033[0m")
-    print(f"\033[1;32m[SUCCESS] {__NAME__} da san sang. Go {prefix}menu de mo Menu.\033[0m")
+    print(f"\033[1;32m[SUCCESS] {__NAME__} đã sẵn sàng. Gõ {prefix}menu để mở Menu.\033[0m")
 
 bot.run(token)
