@@ -128,21 +128,65 @@ proxy_list = []
 proxy_cycle = None
 proxy_file = "config/proxies.txt"
 last_proxy_time = 0
+last_proxy_refresh = 0
 PROXY_ROTATE_MIN = 0
 PROXY_ROTATE_MAX = 2
+PROXY_REFRESH_INTERVAL = 300
+
+PROXY_API_URLS = [
+    "https://api.proxyscrape.com/v4/free-proxy-list/get?request=display_proxies&proxy_format=protocolipport&format=text",
+    "https://cdn.jsdelivr.net/gh/officialputuid/KangProxy@main/xResults/Proxies.txt",
+    "https://cdn.jsdelivr.net/gh/proxifly/free-proxy-list@main/proxies/protocols/http/data.txt",
+    "https://cdn.jsdelivr.net/gh/proxifly/free-proxy-list@main/proxies/protocols/socks5/data.txt",
+    "https://raw.githubusercontent.com/VPSLabCloud/VPSLab-Free-Proxy-List/main/http_elite.txt",
+    "https://raw.githubusercontent.com/VPSLabCloud/VPSLab-Free-Proxy-List/main/socks5_all.txt",
+]
 
 def load_proxies():
-    global proxy_list, proxy_cycle
+    global proxy_list, proxy_cycle, last_proxy_refresh
     if os.path.exists(proxy_file):
         with open(proxy_file, 'r') as f:
             proxy_list = [line.strip() for line in f if line.strip() and not line.startswith('#')]
         if proxy_list:
             proxy_cycle = itertools.cycle(proxy_list)
-            print(f"\033[1;32m[PROXY] Loaded {len(proxy_list)} proxies\033[0m")
+            last_proxy_refresh = time.time()
+            print(f"\033[1;32m[PROXY] Loaded {len(proxy_list)} proxies from file\033[0m")
         else:
-            print(f"\033[1;33m[PROXY] No proxies found, using direct connection\033[0m")
+            print(f"\033[1;33m[PROXY] No proxies found in file\033[0m")
     else:
-        print(f"\033[1;33m[PROXY] {proxy_file} not found, using direct connection\033[0m")
+        print(f"\033[1;33m[PROXY] {proxy_file} not found\033[0m")
+
+async def fetch_proxies_from_api():
+    global proxy_list, proxy_cycle, last_proxy_refresh
+    new_proxies = []
+    for url in PROXY_API_URLS:
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, timeout=aiohttp.ClientTimeout(total=10)) as resp:
+                    if resp.status == 200:
+                        text = await resp.text()
+                        lines = [line.strip() for line in text.splitlines() if line.strip()]
+                        valid = [l for l in lines if l.startswith(('http://', 'https://', 'socks4://', 'socks5://'))]
+                        new_proxies.extend(valid)
+                        print(f"\033[1;32m[PROXY] Fetched {len(valid)} from {url.split('/')[2]}\033[0m")
+        except Exception as e:
+            print(f"\033[1;33m[PROXY] Failed to fetch from {url.split('/')[2]}: {e}\033[0m")
+    if new_proxies:
+        unique = list(set(new_proxies))
+        proxy_list = unique
+        proxy_cycle = itertools.cycle(proxy_list)
+        last_proxy_refresh = time.time()
+        print(f"\033[1;32m[PROXY] Updated: {len(proxy_list)} proxies total\033[0m")
+        with open(proxy_file, 'w') as f:
+            f.write(f"# Auto-refreshed proxies\n")
+            for p in proxy_list:
+                f.write(f"{p}\n")
+    else:
+        print(f"\033[1;33m[PROXY] No new proxies fetched\033[0m")
+
+def check_proxy_refresh():
+    if time.time() - last_proxy_refresh >= PROXY_REFRESH_INTERVAL:
+        asyncio.ensure_future(fetch_proxies_from_api())
 
 def get_next_proxy():
     global proxy_cycle, last_proxy_time
@@ -2249,6 +2293,9 @@ async def on_resumed():
 async def on_ready():
     os.system('cls' if os.name == 'nt' else 'clear')
     load_proxies()
+    if not proxy_list:
+        print(f"\033[1;33m[PROXY] Fetching proxies from APIs...\033[0m")
+        await fetch_proxies_from_api()
     guild_count = len(bot.guilds)
     python_ver = platform.python_version()
     discord_ver = discord.__version__
