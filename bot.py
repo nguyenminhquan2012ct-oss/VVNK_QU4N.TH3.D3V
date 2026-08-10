@@ -543,7 +543,6 @@ async def statuscycle(ctx):
         cycleStatus = False
         await ctx.send(f"# __{__NAME__}__\n **Đã dừng cycle status**")
 @bot.command(name="stop")
-@bot.command(name="stop")
 async def stop_all(ctx):
     await ctx.message.delete()
     global cycleStatus, spamming_task, spamming_nhay_task, webhook_task, spam_task, disconnecting
