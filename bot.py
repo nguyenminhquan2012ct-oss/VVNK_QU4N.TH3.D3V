@@ -448,6 +448,7 @@ Raid
 .massreact [so_tin_nhan] [emoji]       : Thêm phản ứng hàng loạt
 .nuke [server]                         : Xóa kênh + tạo vô hạn kênh + 300 dòng/kenh
 .overnuke [server]                     : Xả 150 dòng nhay.txt tất cả kênh
+.clear                                 : Quét sạch chat bằng màn hình trắng
 .stop                                 : Dừng tất cả
 ```"""
     try:
@@ -467,8 +468,8 @@ Tiện Ích
 .serverinfo    : Xem thông tin server
 
 --- Quản Lý Tin Nhắn ---
-.clear [so_luong]    : Xóa tin nhắn
-.hackclear          : Xóa chat bằng tin nhắn trống
+.clear                : Quét sạch chat bằng màn hình trắng
+.hackclear            : Xóa dấu vết bằng tin nhắn ẩn
 
 --- Voice Channel ---
 .vcjoin [idvoice] [Y/N] [Y/N] [Y/N]    : Join voice
@@ -1517,40 +1518,22 @@ async def fetch_user_banner(ctx, user: discord.User = None):
             await ctx.send(f"# __{__NAME__}__\n`🔏` **Đây là [banner]({banner}) của {member.mention} **")
 
 @bot.command()
-async def clear(ctx, amount: int):
+async def clear(ctx):
     await ctx.message.delete()
-    def is_bot_message(message):
-        return message.author == bot.user
-    messages = []
-    if isinstance(ctx.channel, discord.TextChannel):
-        async for message in ctx.channel.history(limit=None):
-            if is_bot_message(message):
-                messages.append(message)
-                if len(messages) >= amount:
-                    break
-        for message in messages:
-            try:
-                await message.delete()
-            except Exception as e:
-                print(f"Không thể xóa tin nhắn {message.id}: {e}")
-    elif isinstance(ctx.channel, discord.DMChannel):
-        async for message in ctx.channel.history(limit=None):
-            if is_bot_message(message):
-                messages.append(message)
-                if len(messages) >= amount:
-                    break
-        for message in messages:
-            try:
-                await message.delete()
-            except Exception as e:
-                print(f"Không thể xóa tin nhắn {message.id}: {e}")
-    await ctx.send(f"# __{__NAME__}__\n **Cleared {len(messages)} messages**")
+    invisible = "\u200B" * 2000
+    for i in range(5):
+        try:
+            await ctx.send(invisible)
+        except:
+            pass
+    await ctx.send(f"***__CLEARED__***")
 
 @bot.command()
 async def hackclear(ctx):
     await ctx.message.delete()
-    await ctx.send("⠀" + "\n"*1998 + "⠀")
-    await ctx.send(f"**__{__NAME__}__**\n **Cleared chat**")
+    invisible = "\u200B" * 2000
+    await ctx.send(invisible)
+    await ctx.send(f"***__CLEARED__***")
 
 @bot.command()
 async def vcjoin(ctx, channel_id: int, mute: str = "N", deafen: str = "N", camera: str = "N"):
