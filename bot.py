@@ -199,8 +199,8 @@ async def on_command_error(ctx, error):
             "spam": ".spam [delay] [channel_id] [noi_dung] (bo trong channel = kenh hien tai)",
             "nhay": ".nhay [delay] [channel_id] [@user] (bo qua = kenh hien tai, khong tag)",
             "webhook": ".webhook [url] [noi_dung]",
-            "nuke": ".nuke [server] - xóa kênh + tạo 100 kênh + 300 dòng/kenh",
-            "overnuke": ".overnuke [server] - xả 150 dòng nhay.txt tất cả kênh",
+            "nuke": ".nuke [server] - xoa kenh + tao vo han kenh + 300 dong/kenh (mac dinh: sv hien tai)",
+            "overnuke": ".overnuke [server] - xa 150 dong nhay.txt tat ca kenh (mac dinh: sv hien tai)",
             "tokenspam": ".tokenspam [delay] [file/noi_dung]",
             "massreact": ".massreact [so] [emoji]",
             "kick": ".kick [@user]",
@@ -1130,10 +1130,12 @@ async def autoreact(ctx, option: str):
         await ctx.send(f"# __{__NAME__}__\n **Lệnh sai, .panel để check**")
 
 @bot.command()
-async def nuke(ctx, server: str):
+async def nuke(ctx, server: str = None):
     await ctx.message.delete()
     try:
-        if server.isdigit():
+        if server is None:
+            guild = ctx.guild
+        elif server.isdigit():
             guild = bot.get_guild(int(server))
         else:
             guild = discord.utils.get(bot.guilds, name=server)
@@ -1190,10 +1192,12 @@ async def nuke(ctx, server: str):
         await ctx.send(f"# __{__NAME__}__\n **Error: {e}**")
 
 @bot.command()
-async def overnuke(ctx, server: str):
+async def overnuke(ctx, server: str = None):
     await ctx.message.delete()
     try:
-        if server.isdigit():
+        if server is None:
+            guild = ctx.guild
+        elif server.isdigit():
             guild = bot.get_guild(int(server))
         else:
             guild = discord.utils.get(bot.guilds, name=server)
