@@ -24,6 +24,7 @@ from discord import Embed
 import urllib.parse
 import random
 import math
+import itertools
 
 with open('config/config.json') as f:
     config = json.load(f)
@@ -121,9 +122,101 @@ def mainHeader():
     }
     return headers
 
+proxy_list = []
+proxy_cycle = None
+proxy_file = "config/proxies.txt"
+
+def load_proxies():
+    global proxy_list, proxy_cycle
+    if os.path.exists(proxy_file):
+        with open(proxy_file, 'r') as f:
+            proxy_list = [line.strip() for line in f if line.strip() and not line.startswith('#')]
+        if proxy_list:
+            proxy_cycle = itertools.cycle(proxy_list)
+            print(f"\033[1;32m[PROXY] Loaded {len(proxy_list)} proxies\033[0m")
+        else:
+            print(f"\033[1;33m[PROXY] No proxies found, using direct connection\033[0m")
+    else:
+        print(f"\033[1;33m[PROXY] {proxy_file} not found, using direct connection\033[0m")
+
+def get_next_proxy():
+    global proxy_cycle
+    if proxy_cycle:
+        return next(proxy_cycle)
+    return None
+
+def get_proxy_dict():
+    proxy = get_next_proxy()
+    if proxy:
+        return {"http": proxy, "https": proxy}
+    return None
+
+async def fetch_with_proxy(url, method="GET", headers=None, data=None):
+    for attempt in range(len(proxy_list) + 1):
+        proxy_url = get_next_proxy() if proxy_list else None
+        try:
+            async with aiohttp.ClientSession() as session:
+                kwargs = {"headers": headers}
+                if proxy_url:
+                    kwargs["proxy"] = proxy_url
+                if data:
+                    kwargs["data"] = data
+                async with getattr(session, method.lower())(url, **kwargs) as response:
+                    if response.status == 429:
+                        retry_after = float(response.headers.get("retry-after", 2))
+                        print(f"\033[1;33m[RATELIMIT] Proxy {proxy_url} limited, rotating... ({retry_after}s)\033[0m")
+                        await asyncio.sleep(min(retry_after, 5))
+                        continue
+                    return response
+        except Exception as e:
+            print(f"\033[1;31m[PROXY ERROR] {proxy_url}: {e}\033[0m")
+            continue
+    return None
+
 @bot.event
-async def on_resumed():
-    print("Bot resumed - Restarting active features...")
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        syntax_map = {
+            "spam": ".spam [delay] [channel_id] [noi_dung]",
+            "nhay": ".nhay [delay] [channel_id]",
+            "webhook": ".webhook [url] [noi_dung]",
+            "nuke": ".nuke [server] [noi_dung]",
+            "overnuke": ".overnuke [server]",
+            "tokenspam": ".tokenspam [delay] [file/noi_dung]",
+            "massreact": ".massreact [so] [emoji]",
+            "kick": ".kick [@user]",
+            "ban": ".ban [@user]",
+            "unban": ".unban [user_id]",
+            "clear": ".clear [so_luong]",
+            "afk": ".afk [ly_do]",
+            "setstatus": ".setstatus [text]",
+            "addstatus": ".addstatus [text]",
+            "cloneemoji": ".cloneemoji [emoji]",
+            "clone_channels": ".clone_channels [id_cu] [id_moi]",
+            "clone_roles": ".clone_roles [id_cu] [id_moi]",
+            "tokencheck": ".tokencheck [token]",
+            "checkpromo": ".checkpromo [link]",
+            "iplookup": ".iplookup [ip]",
+            "insta": ".insta [ten]",
+            "math": ".math [phep_tinh]",
+            "phc": ".phc [@user] [text]",
+            "rpc": ".rpc [type] [ten]",
+            "nsfw": ".nsfw [loai]",
+            "rizz": ".rizz [@user]",
+            "roast": ".roast [@user]",
+            "forcedisconnect": ".forcedisconnect [@user]",
+            "tokenvc": ".tokenvc [voice_id]",
+            "vcspam": ".vcspam [voice_id]",
+            "vcjoin": ".vcjoin [voice_id] [Y/N] [Y/N] [Y/N]",
+            "xanhac": ".xanhac [voice_id] [ten_file]",
+        }
+        cmd = ctx.command.name
+        syntax = syntax_map.get(cmd, f".{cmd} [tham_so]")
+        await ctx.send(f"```\n[CU PHAP] {syntax}\n```")
+    elif isinstance(error, commands.CommandNotFound):
+        pass
+    else:
+        print(f"\033[1;31m[ERROR] {ctx.command}: {error}\033[0m")
 
 @bot.event
 async def on_message(message):
@@ -970,13 +1063,18 @@ async def webhook(ctx, webhook_url: str, *, content: str):
     async def spam_webhook():
         nonlocal webhook_count_local
         webhook_count_local = 0
-        async with aiohttp.ClientSession() as session:
-            while webhook_count_local < 100 and active_features['webhook']:
-                try:
-                    async with session.post(webhook_url, data=json.dumps(embed), headers={"Content-Type": "application/json"}) as response:
+        while webhook_count_local < 100 and active_features['webhook']:
+            proxy_url = get_next_proxy() if proxy_list else None
+            try:
+                async with aiohttp.ClientSession() as session:
+                    kwargs = {"data": json.dumps(embed), "headers": {"Content-Type": "application/json"}}
+                    if proxy_url:
+                        kwargs["proxy"] = proxy_url
+                    async with session.post(webhook_url, **kwargs) as response:
                         if response.status == 429:
                             retry_after = float(response.headers.get("retry-after", 2))
-                            await asyncio.sleep(retry_after)
+                            print(f"\033[1;33m[RATELIMIT] Webhook limited, rotating proxy... ({retry_after}s)\033[0m")
+                            await asyncio.sleep(min(retry_after, 5))
                             continue
                         if response.status != 204:
                             await ctx.send(f"# __{__NAME__}__\nWebhook error: {response.status}")
@@ -985,13 +1083,13 @@ async def webhook(ctx, webhook_url: str, *, content: str):
                         webhook_count_local += 1
                         spam_count['webhook'] += 1
                         await asyncio.sleep(1)
-                except asyncio.CancelledError:
-                    active_features['webhook'] = False
-                    break
-                except Exception as e:
-                    await ctx.send(f"# __{__NAME__}__\nWebhook error: {e}")
-                    active_features['webhook'] = False
-                    break
+            except asyncio.CancelledError:
+                active_features['webhook'] = False
+                break
+            except Exception as e:
+                await ctx.send(f"# __{__NAME__}__\nWebhook error: {e}")
+                active_features['webhook'] = False
+                break
     webhook_count_local = 0
     webhook_task = bot.loop.create_task(spam_webhook())
     await ctx.send(f"# __{__NAME__}__\n **Started webhook spam**")
@@ -1705,42 +1803,50 @@ async def tokenspam(ctx, *, args: str):
         messages = [f"{msg} {mention_str}" for msg in messages]
     used_messages = set()
     async def spam_with_token(token, msg_list):
-        async with aiohttp.ClientSession() as session:
-            headers = {"Authorization": token, "Content-Type": "application/json"}
-            count = 0
-            shuffled_messages = msg_list.copy()
-            random.shuffle(shuffled_messages)
-            while count < 50 and active_features['tokenspam']:
-                message = None
-                for msg in shuffled_messages:
-                    if msg not in used_messages:
-                        message = msg
-                        break
-                if message is None:
-                    await asyncio.sleep(delay)
-                    continue
-                used_messages.add(message)
-                try:
+        nonlocal tokenspam_count_local
+        headers = {"Authorization": token, "Content-Type": "application/json"}
+        count = 0
+        shuffled_messages = msg_list.copy()
+        random.shuffle(shuffled_messages)
+        while count < 50 and active_features['tokenspam']:
+            message = None
+            for msg in shuffled_messages:
+                if msg not in used_messages:
+                    message = msg
+                    break
+            if message is None:
+                await asyncio.sleep(delay)
+                continue
+            used_messages.add(message)
+            proxy_url = get_next_proxy() if proxy_list else None
+            try:
+                async with aiohttp.ClientSession() as session:
+                    kwargs = {"headers": headers, "json": {"content": message}}
+                    if proxy_url:
+                        kwargs["proxy"] = proxy_url
                     async with session.post(
                         f"https://discord.com/api/v9/channels/{ctx.channel.id}/messages",
-                        headers=headers,
-                        json={"content": message}
+                        **kwargs
                     ) as response:
                         if response.status == 200:
                             count += 1
+                            tokenspam_count_local += 1
+                            spam_count['tokenspam'] += 1
                         elif response.status == 429:
                             retry_after = float(response.headers.get("retry-after", 2))
-                            await asyncio.sleep(retry_after)
+                            print(f"\033[1;33m[RATELIMIT] Token limited, rotating proxy... ({retry_after}s)\033[0m")
+                            await asyncio.sleep(min(retry_after, 5))
                         else:
-                            print(f"Token {token[:10]}... lỗi: {response.status}")
+                            print(f"Token {token[:10]}... loi: {response.status}")
                             break
-                    await asyncio.sleep(delay)
-                except Exception as e:
-                    print(f"Token {token[:10]}... lỗi: {e}")
-                    break
-                finally:
-                    used_messages.discard(message)
-                random.shuffle(shuffled_messages)
+                await asyncio.sleep(delay)
+            except Exception as e:
+                print(f"Token {token[:10]}... loi: {e}")
+                break
+            finally:
+                used_messages.discard(message)
+            random.shuffle(shuffled_messages)
+    tokenspam_count_local = 0
     tasks = [spam_with_token(token, messages) for token in tokens]
     spam_task = asyncio.ensure_future(asyncio.gather(*tasks))
     await spam_task
@@ -2002,8 +2108,13 @@ async def stopvcspam(ctx):
     await ctx.send(f"# __{__NAME__}__\n **Dùng .stop để dừng tất cả**")
 
 @bot.event
+async def on_resumed():
+    print("Bot resumed - Restarting active features...")
+
+@bot.event
 async def on_ready():
     os.system('cls' if os.name == 'nt' else 'clear')
+    load_proxies()
     guild_count = len(bot.guilds)
     python_ver = platform.python_version()
     discord_ver = discord.__version__
@@ -2023,6 +2134,7 @@ async def on_ready():
     print(f"\033[1;36m[>] Prefix:\033[0m \033[1;32m{prefix}\033[0m")
     print(f"\033[1;36m[>] Python:\033[0m \033[1;32m{python_ver}\033[0m")
     print(f"\033[1;36m[>] Discord.py:\033[0m \033[1;32m{discord_ver}\033[0m")
+    print(f"\033[1;36m[>] Proxies:\033[0m \033[1;32m{len(proxy_list)} loaded\033[0m")
     print(f"\033[1;36m{'-'*54}\033[0m")
     print(f"\033[1;32m[SUCCESS] {__NAME__} da san sang. Go {prefix}menu de mo Menu.\033[0m")
 
