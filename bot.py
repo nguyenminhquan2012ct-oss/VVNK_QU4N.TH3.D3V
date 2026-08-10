@@ -26,27 +26,6 @@ import random
 import math
 import itertools
 
-class Tee:
-    def __init__(self, *streams):
-        self.streams = streams
-    def write(self, data):
-        for s in self.streams:
-            try:
-                s.write(data)
-                s.flush()
-            except:
-                pass
-    def flush(self):
-        for s in self.streams:
-            try:
-                s.flush()
-            except:
-                pass
-
-log_file = open("bot.log", "w", encoding="utf-8", errors="replace")
-sys.stdout = Tee(sys.__stdout__, log_file)
-sys.stderr = Tee(sys.__stderr__, log_file)
-
 with open('config/config.json') as f:
     config = json.load(f)
     token = config['token']

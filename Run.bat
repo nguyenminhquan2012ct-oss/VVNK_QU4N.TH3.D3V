@@ -44,12 +44,9 @@ python install.py
 
 echo.
 echo ============================================
-echo       Dang mo 2 cua so...
+echo          Dang khoi dong bot...
 echo ============================================
 echo.
 
-type nul > bot.log
-start "VVNK - Log" cmd /c "python log_watcher.py & pause"
-timeout /t 1 /nobreak >NUL
 python bot.py
 pause
