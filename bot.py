@@ -1851,8 +1851,6 @@ async def stoptokenspam(ctx):
 @bot.command()
 async def stoptreodu(ctx):
     await ctx.send(f"# __{__NAME__}__\n **Dùng .stop để dừng tất cả**")
-    else:
-        await ctx.send(f"# __{__NAME__}__\n **Không có spam treo đú nào đang chạy**")
         
 @bot.command()
 async def tokenvc(ctx, channel_id: int):
