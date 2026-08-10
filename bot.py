@@ -2318,5 +2318,8 @@ async def on_ready():
     print(f"\033[1;36m[>] Proxies:\033[0m \033[1;32m{len(proxy_list)} loaded\033[0m")
     print(f"\033[1;36m{'-'*54}\033[0m")
     print(f"\033[1;32m[SUCCESS] {__NAME__} đã sẵn sàng. Gõ {prefix}menu để mở Menu.\033[0m")
+    await asyncio.sleep(4)
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print(f"\033[1;32m[SUCCESS] {__NAME__} đang chạy... Gõ {prefix}menu trong Discord.\033[0m")
 
 bot.run(token)
